@@ -1,5 +1,5 @@
-import { FileStruct } from '../media/attachment';
-import { MemberCompositeKeyStruct } from './serverMember';
+import type { FileStruct } from '../media/attachment';
+import type { MemberCompositeKeyStruct } from './serverMember';
 
 export interface ServerStruct {
   _id: MemberCompositeKeyStruct;

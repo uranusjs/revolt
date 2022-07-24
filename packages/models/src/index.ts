@@ -1,34 +1,20 @@
-export const Models = {
-  Channels: {
-    Channel: import('./models/channels/channel'),
-    ChannelInvite: import('./models/channels/channelInvite'),
-    ChannelUnread: import('./models/channels/channelUnread'),
-    Message: import('./models/channels/message'),
-  },
 
-  Media: {
-    Attachment: import('./models/media/attachment'),
-    Emoji: import('./models/media/emoji'),
-  },
+export * from './embeds/embed'
+export * from './embeds/media'
+export * from './embeds/special'
 
-  Servers: {
-    Server: import('./models/servers/server'),
-    Emoji: import('./models/servers/serverMember'),
-  },
+export * from './models/channels/channel'
+export * from './models/channels/channelInvite'
+export * from './models/channels/channelUnread'
+export * from './models/channels/message'
 
-  Users: {
-    Bot: import('./models/users/bot'),
-    User: import('./models/users/user'),
-  },
+export * from './models/media/attachment'
+export * from './models/media/emoji'
 
-}
+export * from './models/servers/server'
+export * from './models/servers/serverMember'
 
-export const Permissions = {
-  Permission: import('./permissions/permission'),
-}
+export * from './models/users/bot'
+export * from './models/users/user'
 
-export const Embeds = {
-  Embed: import('./embeds/embed'),
-  Media: import('./embeds/media'),
-  Special: import('./embeds/special'),
-}
+export * from './permissions/permission'

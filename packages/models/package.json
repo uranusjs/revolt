@@ -2,7 +2,9 @@
   "name": "@uranusjs/models-revolt",
   "main": "./build/index",
   "version": "1.0.0",
-  "typings": "./build/index.d.ts",
+  "typings": "./build/index",
+  "types": "./build/index",
+  "module": "module",
   "exports": {
     "types": "./build/index.d.ts"
   },

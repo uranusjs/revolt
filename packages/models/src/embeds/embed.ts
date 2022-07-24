@@ -1,5 +1,5 @@
-import { ImageStruct, VideoStruct } from './media';
-import { Special } from './special';
+import type { ImageStruct, VideoStruct } from './media';
+import type { Special } from './special';
 
 export enum TypeEmbed {
   Website,

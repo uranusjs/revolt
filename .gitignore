@@ -3,5 +3,6 @@ package-lock.json
 yarn.lock
 .vscode/
 .git/
+.idea/
 node_modules/
 .tsbuildinfo

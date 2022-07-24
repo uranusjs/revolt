@@ -1,4 +1,4 @@
-import { FileStruct } from '../media/attachment';
+import type { FileStruct } from '../media/attachment';
 
 export interface MemberCompositeKeyStruct {
   server: string;

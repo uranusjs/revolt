@@ -1,3 +1,4 @@
+
 export enum API {
   PROTOCOL = 'https://',
   URL = 'api.revolt.chat',

@@ -3,6 +3,7 @@
   "main": "./build/index",
   "version": "1.0.0",
   "typings": "./build/index.d.ts",
+  "module": "module",
   "exports": {
     "types": "./build/index.d.ts"
   },

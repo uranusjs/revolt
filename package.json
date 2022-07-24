@@ -21,8 +21,12 @@
     "packages/*"
   ],
   "devDependencies": {
+    "eslint": "^8.20.0",
     "eslint-import-resolver-typescript": "^3.3.0",
     "eslint-plugin-import": "^2.26.0",
     "tsc-compile-projects": "github:nayvcake/tsc-compile-projects#main"
+  },
+  "dependencies": {
+    "tslib": "^2.4.0"
   }
 }

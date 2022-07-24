@@ -1,4 +1,4 @@
-import { FileStruct } from '../media/attachment';
+import type { FileStruct } from '../media/attachment';
 
 /**
  * @description Relationship entry indicating current status with other user

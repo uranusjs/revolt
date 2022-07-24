@@ -1,7 +1,7 @@
-import { MetadataEmbedStruct } from '../../embeds/embed';
-import { FileStruct } from '../media/attachment';
-import { MemberStruct } from '../servers/serverMember';
-import { UserStruct } from '../users/user';
+import type { MetadataEmbedStruct } from '../../embeds/embed';
+import type { FileStruct } from '../media/attachment';
+import type { MemberStruct } from '../servers/serverMember';
+import type { UserStruct } from '../users/user';
 
 export interface SendableEmbedStruct {
   icon_url: string;
