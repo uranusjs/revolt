@@ -1,4 +1,13 @@
 {
   "name": "@uranusjs/rest-revolt",
-  "main": "./build/index"
+  "main": "./build/index",
+  "version": "1.0.0",
+  "typings": "./build/index.d.ts",
+  "exports": {
+    "types": "./build/index.d.ts"
+  },
+  "dependencies": {
+    "@uranusjs/models-revolt": "^1.0.0"
+  },
+  "license": "ISC"
 }

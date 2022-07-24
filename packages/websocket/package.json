@@ -1,4 +1,10 @@
 {
   "name": "@uranusjs/ws-revolt",
-  "main": "./build/index"
+  "main": "./build/index",
+  "version": "1.0.0",
+  "typings": "./build/index.d.ts",
+  "exports": {
+    "types": "./build/index.d.ts"
+  },
+  "license": "ISC"
 }
