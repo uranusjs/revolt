@@ -1,0 +1,25 @@
+{
+  "name": "@uranusjs/revolt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "project.wrapper.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uranusjs/revolt.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/uranusjs/revolt/issues"
+  },
+  "homepage": "https://github.com/uranusjs/revolt#readme",
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "tsc-compile-projects": "github:nayvcake/tsc-compile-projects#main"
+  }
+}
