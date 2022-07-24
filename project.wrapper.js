@@ -2,7 +2,7 @@
 // Compile subs projects!
 const ProjectWrapper = require('tsc-compile-projects')
 const Events = require('tsc-compile-projects/src/events').Event
-const devMode = true
+const devMode = false
 const projects = [
   {
     'name': 'base',
