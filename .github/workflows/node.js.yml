@@ -12,7 +12,7 @@ on:
 jobs:
   build:
 
-    runs-on: [ubuntu-latest, windows-latest, macos-11]
+    runs-on: [ubuntu-latest, macos-11]
 
     strategy:
       matrix:
