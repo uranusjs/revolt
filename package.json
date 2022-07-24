@@ -2,7 +2,7 @@
   "name": "@uranusjs/revolt",
   "version": "1.0.0",
   "description": "",
-  "main": "project.wrapper.js",
+  "private": true,
   "scripts": {
     "postinstall": "node project.wrapper.js",
     "test": "node project.dev.js"
