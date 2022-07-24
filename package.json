@@ -4,6 +4,7 @@
   "description": "",
   "main": "project.wrapper.js",
   "scripts": {
+    "postinstall": "node project.wrapper.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
