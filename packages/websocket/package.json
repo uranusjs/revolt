@@ -1,3 +1,4 @@
 {
-  "name": "@uranusjs/ws-revolt"
+  "name": "@uranusjs/ws-revolt",
+  "main": "./build/index"
 }

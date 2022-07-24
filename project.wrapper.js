@@ -37,7 +37,11 @@ const projects = [
 ]
 
 console.log('Starting for compile packages!')
-console.log(`Loading ${projects.length} packages...`)
+if (devMode) {
+  console.log(`Loading ${projects.length} packages...`)
+} else {
+  console.log(`Compiling ${projects.length} packages...`)
+}
 
 class Wrapper {
   static runner() {
