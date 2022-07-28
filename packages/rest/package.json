@@ -10,5 +10,6 @@
   "dependencies": {
     "@uranusjs/models-revolt": "^1.0.0"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "packageManager": "yarn@6.3.2"
 }

@@ -6,5 +6,6 @@
   "exports": {
     "types": "./build/index.d.ts"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "packageManager": "yarn@6.3.2"
 }
