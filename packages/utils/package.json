@@ -1,9 +1,15 @@
 {
   "name": "@uranusjs/utils-revolt",
-  "main": "./build/index",
+  "main": "./build/src/index.js",
   "version": "1.0.0",
+  "types": "./build/src/index.d.ts",
   "typings": "./build/index.d.ts",
+  "module": "module",
   "exports": {
+    "node": "./build/src/index.js",
+    "import": "./build/src/index.js",
+    "default": "./build/src/index.js",
+    "require": "./build/src/index.js",
     "types": "./build/index.d.ts"
   },
   "license": "ISC",

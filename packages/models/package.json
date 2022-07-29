@@ -1,13 +1,10 @@
 {
   "name": "@uranusjs/models-revolt",
-  "main": "./build/index",
+  "main": "./build/src/index.js",
   "version": "1.0.0",
-  "typings": "./build/index",
-  "types": "./build/index",
+  "typings": "./build/src/index.d.ts",
   "module": "module",
-  "exports": {
-    "types": "./build/index.d.ts"
-  },
+  "exports": "./build/src/index.js",
   "license": "ISC",
   "packageManager": "yarn@6.3.2"
 }

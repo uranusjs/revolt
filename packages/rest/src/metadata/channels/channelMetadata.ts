@@ -1,5 +1,4 @@
-// @ts-ignore
-import type { FieldsChannels, SendableEmbedStruct } from "@uranusjs/models-revolt";
+import type { FieldsChannels, SendableEmbedStruct } from '@uranusjs/models-revolt';
 
 export interface DataEditChannel {
   name: string;
@@ -9,6 +8,7 @@ export interface DataEditChannel {
   nsfw: boolean;
   remove: Array<FieldsChannels>;
 }
+
 
 export interface DataEditMessage {
   content: string;
