@@ -6,15 +6,15 @@ export interface DataEditChannel {
   owner: string;
   icon: string;
   nsfw: boolean;
-  remove: Array<FieldsChannels>;
+  remove: FieldsChannels[];
 }
 
 
 export interface DataEditMessage {
   content: string;
-  embeds: Array<SendableEmbedStruct>;
+  embeds: SendableEmbedStruct[];
 }
 
 export interface OptionsBulkDelete {
-  ids: Array<string>;
+  ids: string[];
 }

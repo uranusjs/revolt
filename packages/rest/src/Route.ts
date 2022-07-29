@@ -19,8 +19,8 @@ export interface NoRequired { }
 export class Route<T> {
   method: MethodRequest;
   path: string;
-  body?: BodyRouteRequired<T>;
-  constructor(method: MethodRequest, path: string, body?: BodyRouteRequired<T>) {
+  body?: T;
+  constructor(method: MethodRequest, path: string, body?: T) {
     this.method = method;
     this.path = `${API.PROTOCOL + API.URL}${path}`;
     if (body !== undefined) {
@@ -28,7 +28,7 @@ export class Route<T> {
     }
   }
 
-  setMetadata(body: BodyRouteRequired<T>) {
+  setMetadata(body: T) {
     this.body = body;
     return this;
   }

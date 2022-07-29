@@ -13,6 +13,5 @@ export const ChannelsRoute = {
 
   MESSAGE_BULK_DELETE: new Route<Metadata.OptionsBulkDelete>(MethodRequest.DELETE, '/channels/{id}/messages/bulk'),
   MESSAGE_CLEAR_REACTIONS: new Route<NoRequired>(MethodRequest.DELETE, '/channels/{id}/messages/{msg}/reactions'),
-  NESSAGE_DELETE: new Route<Metadata.DataEditMessage>(MethodRequest.PATCH, '/channels/{id}/messages/{msg}'),
+  MESSAGE_DELETE: new Route<Metadata.DataEditMessage>(MethodRequest.PATCH, '/channels/{id}/messages/{msg}'),
 }
-
