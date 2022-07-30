@@ -10,6 +10,7 @@ export interface DataEditChannel {
 }
 
 
+
 export interface DataEditMessage {
   content: string;
   embeds: SendableEmbedStruct[];
