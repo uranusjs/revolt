@@ -9,8 +9,6 @@ export interface DataEditChannel {
   remove: FieldsChannels[];
 }
 
-
-
 export interface DataEditMessage {
   content: string;
   embeds: SendableEmbedStruct[];
@@ -18,4 +16,12 @@ export interface DataEditMessage {
 
 export interface OptionsBulkDelete {
   ids: string[];
+}
+
+export interface DataRoleChannel {
+  permissions: number;
+}
+
+export interface CreateVoiceUserResponse {
+  token: string;
 }

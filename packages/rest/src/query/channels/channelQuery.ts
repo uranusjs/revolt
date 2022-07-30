@@ -30,3 +30,14 @@ export interface OptionsQueryMessages {
    */
   includeUsers: boolean;
 }
+
+export interface OptionsUnreact {
+  /**
+   * Remove a specific user's reaction
+   */
+  user_id?: string;
+  /**
+   * Remove all reactions
+   */
+  remove_all: boolean;
+}
