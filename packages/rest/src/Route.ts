@@ -1,8 +1,4 @@
 
-export enum API {
-  PROTOCOL = 'https://',
-  URL = 'api.revolt.chat',
-}
 
 export enum RoutePath {
   USERS,
@@ -36,7 +32,7 @@ export class Route<T, R> {
   route?: R | null;
   constructor(method: MethodRequest, path: string, routeSpecifications?: RouteSpecifications<T, R>) {
     this.method = method;
-    this.path = `${API.PROTOCOL + API.URL}${path}`;
+    this.path = `${path}`;
     if (routeSpecifications !== null && routeSpecifications !== undefined) {
       if (routeSpecifications?.body !== undefined) {
         this.body = routeSpecifications.body;
