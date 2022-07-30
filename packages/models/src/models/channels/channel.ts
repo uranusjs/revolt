@@ -75,3 +75,8 @@ export enum FieldsChannels {
   Icon,
   DefaultPermissions
 }
+
+export enum ChannelTypeStruct {
+  Text,
+  Voice
+}
