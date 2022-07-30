@@ -121,5 +121,14 @@ export const ServersRoute = {
     new Route<MetadataServer.DataEditServer>(MethodRequest.PATCH, `/servers/${serverId}`),
   SERVER_GET: (serverId: string) =>
     new Route<NoRequired>(MethodRequest.GET, `/servers/${serverId}`),
-  
+}
+
+export const Customisation = {
+  EMOJI_FETCH: (id: string) => 
+    new Route<NoRequired>(MethodRequest.GET, `/customisation/${id}`),
+}
+
+export const Invites = {
+  INVITE_FETCH: (id: string) =>
+    new Route<NoRequired>(MethodRequest.GET, `/invites/${id}`),
 }
