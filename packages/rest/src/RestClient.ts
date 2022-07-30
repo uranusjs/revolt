@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { EventEmitter } from 'node:events';
-import type { Route, RoutePath } from './Route';
+import { MethodRequest, Route } from './Route';
 
 
 export enum API {
@@ -16,23 +16,30 @@ export interface DetailsBucket {
   resetAfter: number;
 }
 
+export interface DataRequest {
+  id: string;
+  requestRoute: Route<any, any>;
+  requestCreate: RequestCreate;
+}
+
 export class Bucket {
   bucketId: string;
   bucketManager: BucketManager;
-  route: Map<RoutePath, RequestPacket>;
+  route: DataRequest[];
 
   // Pause requests as soon as time is up to start another bucket refill 
   rateLimit?: boolean;
   limit?: number;
   remaining?: number;
   resetAfter?: number;
+  requests: number;
+
   constructor(id: string, bucketManager: BucketManager, details: DetailsBucket) {
     this.bucketId = id;
     this.bucketManager = bucketManager;
-
+    this.requests = 0;
     // Save route!
-    this.route = new Map();
-
+    this.route = new Array();
     // Information of Bucket(Header)
     if (details !== undefined && details !== null) {
       if (details.bucket === undefined) {
@@ -49,11 +56,24 @@ export class Bucket {
       if (details.resetAfter === undefined) {
         throw new Error('Missing x-ratelimit-reset-after')
       } else {
+        setTimeout(() => {
+          // Delete bucket
+          this.bucketManager.buckets.delete(this.bucketId);
+        }, details.resetAfter);
         this.resetAfter = details.resetAfter;
       }
     }
   }
 
+  registerRoute(request: RequestCreate) {
+    const id = Array.from({ length: Math.min(1, Math.floor(Math.random() * 9)) },
+      () => { return Buffer.from(`${Math.floor(Math.random() * 10000000000000000000000000)}`).toString('base64') })
+    this.route.push({
+      id: Buffer.from(id.join('')).toString('base64').substring(0, 14),
+      requestRoute: request.route,
+      requestCreate: request
+    })
+  }
 
 }
 
@@ -65,20 +85,23 @@ export interface HeadersDetailsI {
 }
 
 export class HeadersDetails {
-  static toDetails(bucket: string, limit: number, remaining: number, resetAfter: number) {
-
-  }
-
-
-  static checkDetails() {
-
-  }
-  
 
   static validateBucket(headers: Record<string, string> & {
     "set-cookie"?: string[]
   }) {
-   
+    if (headers['X-RateLimit-Bucket'] === undefined) {
+      return false
+    }
+    if (headers['X-RateLimit-Limit'] === undefined) {
+      return false
+    }
+    if (headers['X-RateLimit-Remaining'] === undefined) {
+      return false
+    }
+    if (headers['X-RateLimit-Reset-After'] === undefined) {
+      return false
+    }
+    return true
   }
 
 
@@ -95,8 +118,12 @@ export class HeadersDetails {
 
 }
 export class BucketManager {
+  private readonly sessionToken!: string;
   buckets: Map<string, Bucket>
-  constructor() {
+  constructor(sessionToken: string) {
+    if (sessionToken !== undefined && typeof sessionToken === 'string') {
+      this.sessionToken = sessionToken
+    }
     this.buckets = new Map()
   }
 
@@ -109,6 +136,29 @@ export class BucketManager {
     }
 
     return this.buckets.get(id)
+  }
+
+  getRoute(route: Route<any, any>) {
+    let bucket: Bucket | undefined
+    let requestCreate: RequestCreate | undefined
+    for (const a of this.buckets) {
+      if (this.buckets.get(a[0]) !== undefined) {
+        bucket = a[1]
+        if (this.buckets.get('')?.route !== undefined) {
+          for (const b of this.buckets.get(a[0])!!.route) {
+            if (route.path === b.requestRoute.path) {
+              requestCreate = b.requestCreate
+              break
+            }
+          }
+        }
+
+      }
+    }
+    return {
+      bucket,
+      requestCreate
+    }
   }
 }
 
@@ -132,7 +182,7 @@ export class RestClient {
       if (restOptions.bucketManager !== undefined) {
         this.bucketManager = restOptions.bucketManager;
       } else {
-        this.bucketManager = new BucketManager()
+        this.bucketManager = new BucketManager(this.sessionToken)
       }
     }
   }
@@ -158,20 +208,41 @@ export interface RequestPacket {
 }
 
 export class RequestPacket extends EventEmitter {
-  constructor() {
+  private readonly sessionToken!: string;
+  restClient: RestClient | undefined;
+  constructor(sessionToken: string, restClient: RestClient) {
     super();
+    if (sessionToken !== undefined && typeof sessionToken === 'string') {
+      this.sessionToken = sessionToken
+    }
+    if (restClient !== undefined) {
+      this.restClient = restClient
+    }
+  }
+
+  build(route: Route<any, any>) {
+    return new RequestCreate(route, this, this.restClient!!, this.sessionToken)
   }
 }
 
 export interface RequestOptions {
   body?: any;
-  queue?: Function | Promise<void>
+  isJson?: boolean;
+  isRequiredAuth?: boolean;
+  queue?(data: any): Promise<void> | Function;
+  errStatusCode?(code: number): Promise<void> | Function;
+  err?(err: Error): Promise<void> | Function;
 }
 export class RequestCreate {
+  private readonly sessionToken!: string;
   route: Route<any, any>;
   restClient: RestClient;
   requestManager: RequestPacket;
-  constructor(route: Route<any, any>, requestPacket: RequestPacket, restClient: RestClient) {
+  method?: MethodRequest;
+  constructor(route: Route<any, any>, requestPacket: RequestPacket, restClient: RestClient, sessionToken: string) {
+    if (sessionToken !== undefined && typeof sessionToken === 'string') {
+      this.sessionToken = sessionToken
+    }
     this.route = route
     this.requestManager = requestPacket
     this.restClient = restClient
@@ -181,22 +252,111 @@ export class RequestCreate {
     return baseUrl + route
   }
 
-  async GET(_requestOptions: RequestOptions) {
+  async GET<M>(_requestOptions: RequestOptions) {
+    this.method = MethodRequest.GET;
     const url = `${API.PROTOCOL + API.URL}`
+    const options: any = {}
+
+    if (_requestOptions.isRequiredAuth) {
+      options.headers['X-Session-Token'] = this.sessionToken
+    }
     const request = axios.get(this.prepareRoute(url, this.route.path))
-    request.then((http) => {
-      if (!(http.status >= 201)) {
-        throw new Error(`Status received is inappropriate: ${http.status}`);
-      }
-      const getBucketHeader = HeadersDetails.getBucket(http.headers)
-      this.restClient.bucketManager?.getBucket(getBucketHeader['x-ratelimit-bucket'], {
-        bucket: getBucketHeader['x-ratelimit-bucket'],
-        limit: getBucketHeader['x-ratelimit-limit'],
-        remaining: getBucketHeader['x-ratelimit-remaining'],
-        resetAfter: getBucketHeader['x-ratelimit-reset-after']
+    request
+      .then((http) => {
+        const data = JSON.parse(http.data)
+
+        if (http.status === 429) {
+          const error = new Error(`RateLimit: ${data.retry_after}`)
+          if (_requestOptions.err !== undefined) {
+            _requestOptions.err(error)
+          }
+          throw error
+        }
+
+        if (!(http.status >= 201)) {
+          if (_requestOptions.errStatusCode !== undefined) {
+            _requestOptions.errStatusCode(http.status)
+          }
+          throw new Error(`Status received is inappropriate: ${http.status}`);
+        }
+
+        if (HeadersDetails.validateBucket(http.headers)) {
+          const getBucketHeader = HeadersDetails.getBucket(http.headers)
+          const bucket = this.restClient.bucketManager?.getBucket(getBucketHeader['x-ratelimit-bucket'], {
+            bucket: getBucketHeader['x-ratelimit-bucket'],
+            limit: getBucketHeader['x-ratelimit-limit'],
+            remaining: getBucketHeader['x-ratelimit-remaining'],
+            resetAfter: getBucketHeader['x-ratelimit-reset-after']
+          })
+
+          if (bucket?.requests!! >= bucket?.limit!!) {
+            // Event!
+          }
+
+        }
+
+        const metadata: M = http.data
+        if (_requestOptions.queue !== undefined) {
+          _requestOptions.queue(metadata)
+        }
+        return metadata;
       })
-      
-    })
+      .catch((err) => {
+        if (_requestOptions.err !== undefined) {
+          _requestOptions.err(err)
+        }
+      })
+  }
+
+  async PUT<M>(_requestOptions: RequestOptions) {
+    const url = `${API.PROTOCOL + API.URL}`
+    const options: any = {}
+
+    if (_requestOptions.body !== undefined) {
+      options.data = _requestOptions.body
+    }
+    const request = axios.put(this.prepareRoute(url, this.route.path))
+    request
+      .then((http) => {
+        const data = JSON.parse(http.data)
+
+        if (http.status === 429) {
+          const error = new Error(`RateLimit: ${data.retry_after}`)
+          if (_requestOptions.err !== undefined) {
+            _requestOptions.err(error)
+          }
+          throw error
+        }
+
+        if (!(http.status >= 201)) {
+          if (_requestOptions.errStatusCode !== undefined) {
+            _requestOptions.errStatusCode(http.status)
+          }
+          throw new Error(`Status received is inappropriate: ${http.status}`);
+        }
+
+        if (HeadersDetails.validateBucket(http.headers)) {
+          const getBucketHeader = HeadersDetails.getBucket(http.headers)
+
+          this.restClient.bucketManager?.getBucket(getBucketHeader['x-ratelimit-bucket'], {
+            bucket: getBucketHeader['x-ratelimit-bucket'],
+            limit: getBucketHeader['x-ratelimit-limit'],
+            remaining: getBucketHeader['x-ratelimit-remaining'],
+            resetAfter: getBucketHeader['x-ratelimit-reset-after']
+          })
+        }
+
+        const metadata: M = http.data
+        if (_requestOptions.queue !== undefined) {
+          _requestOptions.queue(metadata)
+        }
+        return metadata;
+      })
+      .catch((err) => {
+        if (_requestOptions.err !== undefined) {
+          _requestOptions.err(err)
+        }
+      })
   }
 
 
