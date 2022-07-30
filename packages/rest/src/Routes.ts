@@ -3,7 +3,7 @@ import type * as MetadataServer from './metadata/servers/serverMetadata';
 import type { MessageUnreactOptions } from './options/channels/channelOptions';
 import type { OptionsFetchAllMembers } from './options/servers/serverOptions';
 import type { OptionsQueryMessages } from './query/channels/channelQuery';
-import { MethodRequest, NoRequired, Route } from './Route';
+import { MethodRequest, NoRequired, Route, RoutePath } from './Route';
 
 export const UsersRoute = {
   FETCH_USER: new Route(MethodRequest.GET, '/users/{target}/profile'),
@@ -12,27 +12,47 @@ export const UsersRoute = {
 
 export const ChannelsRoute = {
   CHANNEL_DELETE: (id: string) =>
-    new Route<NoRequired>(MethodRequest.DELETE, `/channels/${id}`),
+    new Route<NoRequired, RoutePath.CHANNELS>(MethodRequest.DELETE, `/channels/${id}`, {
+      route: RoutePath.CHANNELS
+    }),
   CHANNEL_EDIT: (id: string) =>
-    new Route<MetadataChannel.DataEditChannel>(MethodRequest.PATCH, `/channels/${id}`),
+    new Route<MetadataChannel.DataEditChannel, RoutePath.CHANNELS>(MethodRequest.PATCH, `/channels/${id}`, {
+      route: RoutePath.CHANNELS
+    }),
   CHANNEL_FETCH: (id: string) =>
-    new Route<NoRequired>(MethodRequest.GET, `/channels/${id}`),
+    new Route<NoRequired, RoutePath.CHANNELS>(MethodRequest.GET, `/channels/${id}`, {
+      route: RoutePath.CHANNELS
+    }),
 
 
   MESSAGE_BULK_DELETE: (id: string) =>
-    new Route<MetadataChannel.OptionsBulkDelete>(MethodRequest.DELETE, `/channels/${id}/messages/bulk`),
+    new Route<MetadataChannel.OptionsBulkDelete, RoutePath.CHANNELS>(MethodRequest.DELETE, `/channels/${id}/messages/bulk`, {
+      route: RoutePath.CHANNELS
+    }),
   MESSAGE_CLEAR_REACTIONS: (channelId: string, id: string) =>
-    new Route<NoRequired>(MethodRequest.DELETE, `/channels/${channelId}/messages/${id}/reactions`),
+    new Route<NoRequired, RoutePath.CHANNELS>(MethodRequest.DELETE, `/channels/${channelId}/messages/${id}/reactions`, {
+      route: RoutePath.CHANNELS
+    }),
   MESSAGE_DELETE: (channelId: string, messageId: string) =>
-    new Route<NoRequired>(MethodRequest.DELETE, `/channels/${channelId}/messages/${messageId}`),
+    new Route<NoRequired, RoutePath.CHANNELS>(MethodRequest.DELETE, `/channels/${channelId}/messages/${messageId}`, {
+      route: RoutePath.CHANNELS
+    }),
   MESSAGE_EDIT: (channelId: string, messageId: string) =>
-    new Route<MetadataChannel.DataEditMessage>(MethodRequest.PATCH, `/channels/${channelId}/messages/${messageId}`),
+    new Route<MetadataChannel.DataEditMessage, RoutePath.CHANNELS>(MethodRequest.PATCH, `/channels/${channelId}/messages/${messageId}`, {
+      route: RoutePath.CHANNELS
+    }),
   MESSAGE_FETCH: (channelId: string, messageId: string) =>
-    new Route<NoRequired>(MethodRequest.GET, `/channels/${channelId}/messages/${messageId}`),
+    new Route<NoRequired, RoutePath.CHANNELS>(MethodRequest.GET, `/channels/${channelId}/messages/${messageId}`, {
+      route: RoutePath.CHANNELS
+    }),
   MESSAGE_QUERY: (channelId: string, messageId: string, optionsQuery: OptionsQueryMessages) =>
-    new Route<NoRequired>(MethodRequest.GET, `/channels/${channelId}/messages/${messageId}?limit=${optionsQuery.limit}&before=${optionsQuery.before}&after=${optionsQuery.after}&sort=${optionsQuery.sort}&nearby=${optionsQuery.nearby}&includeUsers=${optionsQuery.includeUsers}`),
+    new Route<NoRequired, RoutePath.CHANNELS>(MethodRequest.GET, `/channels/${channelId}/messages/${messageId}?limit=${optionsQuery.limit}&before=${optionsQuery.before}&after=${optionsQuery.after}&sort=${optionsQuery.sort}&nearby=${optionsQuery.nearby}&includeUsers=${optionsQuery.includeUsers}`, {
+      route: RoutePath.CHANNELS
+    }),
   MESSAGE_REACT: (channelId: string, messageId: string, emoji: string) =>
-    new Route<NoRequired>(MethodRequest.POST, `/channels/${channelId}/messages/${messageId}/reactions/${emoji}`),
+    new Route<NoRequired, RoutePath.CHANNELS>(MethodRequest.POST, `/channels/${channelId}/messages/${messageId}/reactions/${emoji}`, {
+      route: RoutePath.CHANNELS
+    }),
   MESSAGE_UNREACT: (channelId: string, messageId: string, options?: MessageUnreactOptions) => {
     let optionQuery: string[] = []
     let emoji = ''
@@ -50,42 +70,64 @@ export const ChannelsRoute = {
         }
       }
     }
-    return new Route<NoRequired>(MethodRequest.DELETE, `/channels/${channelId}/messages/${messageId}/reactions/${emoji}?${optionQuery.join('&')}`)
+    return new Route<NoRequired, RoutePath.CHANNELS>(MethodRequest.DELETE, `/channels/${channelId}/messages/${messageId}/reactions/${emoji}?${optionQuery.join('&')}`, {
+      route: RoutePath.CHANNELS
+    })
   },
 
 
   PERMISSIONS_SET: (channelId: string, roleId: string) =>
-    new Route<MetadataChannel.DataRoleChannel>(MethodRequest.PUT, `/channels/${channelId}/permissions/${roleId}`),
+    new Route<MetadataChannel.DataRoleChannel, RoutePath.CHANNELS>(MethodRequest.PUT, `/channels/${channelId}/permissions/${roleId}`, {
+      route: RoutePath.CHANNELS
+    }),
   PERMISSIONS_SET_DEFAULT: (channelId: string) =>
-    new Route<NoRequired>(MethodRequest.PUT, `/channels/${channelId}/permissions/default`),
+    new Route<NoRequired, RoutePath.CHANNELS>(MethodRequest.PUT, `/channels/${channelId}/permissions/default`, {
+      route: RoutePath.CHANNELS
+    }),
 
 
   VOICE_JOIN: (channelId: string) =>
-    new Route<MetadataChannel.CreateVoiceUserResponse>(MethodRequest.PUT, `/channels/${channelId}/join_call`),
+    new Route<MetadataChannel.CreateVoiceUserResponse, RoutePath.CHANNELS>(MethodRequest.PUT, `/channels/${channelId}/join_call`, {
+      route: RoutePath.CHANNELS
+    }),
 }
 
 
 export const ServersRoute = {
   BAN_CREATE: (serverId: string, userId: string) =>
-    new Route<MetadataServer.DataBanCreate>(MethodRequest.PUT, `/servers/${serverId}/bans/${userId}`),
+    new Route<MetadataServer.DataBanCreate, RoutePath.SERVERS>(MethodRequest.PUT, `/servers/${serverId}/bans/${userId}`, {
+      route: RoutePath.SERVERS
+    }),
   BAN_LIST: (serverId: string) =>
-    new Route<NoRequired>(MethodRequest.PUT, `/servers/${serverId}/bans`),
+    new Route<NoRequired, RoutePath.SERVERS>(MethodRequest.PUT, `/servers/${serverId}/bans`, {
+      route: RoutePath.SERVERS
+    }),
   BAN_REMOVE: (serverId: string, userId: string) =>
-    new Route<NoRequired>(MethodRequest.DELETE, `/servers/${serverId}/bans/${userId}`),
+    new Route<NoRequired, RoutePath.SERVERS>(MethodRequest.DELETE, `/servers/${serverId}/bans/${userId}`, {
+      route: RoutePath.SERVERS
+    }),
 
 
   CHANNEL_CREATE: (serverId: string) =>
-    new Route<MetadataServer.DataCreateChannel>(MethodRequest.POST, `/servers/${serverId}/channels`),
+    new Route<MetadataServer.DataCreateChannel, RoutePath.SERVERS>(MethodRequest.POST, `/servers/${serverId}/channels`, {
+      route: RoutePath.SERVERS
+    }),
 
 
   EMOJI_LIST: (serverId: string) =>
-    new Route<NoRequired>(MethodRequest.GET, `/servers/${serverId}/emojis`),
+    new Route<NoRequired, RoutePath.SERVERS>(MethodRequest.GET, `/servers/${serverId}/emojis`, {
+      route: RoutePath.SERVERS
+    }),
 
 
   MEMBER_EDIT: (serverId: string, memberId: string) =>
-    new Route<MetadataServer.DataMemberEdit>(MethodRequest.PATCH, `/servers/${serverId}/members/${memberId}`),
+    new Route<MetadataServer.DataMemberEdit, RoutePath.SERVERS>(MethodRequest.PATCH, `/servers/${serverId}/members/${memberId}`, {
+      route: RoutePath.SERVERS
+    }),
   MEMBER_FETCH: (serverId: string, memberId: string) =>
-    new Route<NoRequired>(MethodRequest.GET, `/servers/${serverId}/members/${memberId}`),
+    new Route<NoRequired, RoutePath.SERVERS>(MethodRequest.GET, `/servers/${serverId}/members/${memberId}`, {
+      route: RoutePath.SERVERS
+    }),
   MEMBER_FETCH_ALL: (serverId: string, memberId: string, options?: OptionsFetchAllMembers) => {
     let optionQuery: string[] = []
     if (options !== undefined && options !== null) {
@@ -93,42 +135,68 @@ export const ServersRoute = {
         optionQuery.push(`exclude_offline=${options.exclude_offline}`)
       }
     }
-    
-    return new Route<NoRequired>(MethodRequest.GET, `/servers/${serverId}/members/${memberId}`)
+
+    return new Route<NoRequired, RoutePath.SERVERS>(MethodRequest.GET, `/servers/${serverId}/members/${memberId}`, {
+      route: RoutePath.SERVERS
+    })
   },
   MEMBER_REMOVE: (serverId: string, memberId: string) =>
-    new Route<NoRequired>(MethodRequest.DELETE, `/servers/${serverId}/members/${memberId}`),
-  
-  
+    new Route<NoRequired, RoutePath.SERVERS>(MethodRequest.DELETE, `/servers/${serverId}/members/${memberId}`, {
+      route: RoutePath.SERVERS
+    }),
+
+
   PERMISSIONS_SET: (serverId: string, roleId: string) =>
-    new Route<MetadataServer.DataRoleServer>(MethodRequest.PUT, `/servers/${serverId}/permissions/${roleId}`),
+    new Route<MetadataServer.DataRoleServer, RoutePath.SERVERS>(MethodRequest.PUT, `/servers/${serverId}/permissions/${roleId}`, {
+      route: RoutePath.SERVERS
+    }),
   PERMISSIONS_SET_DEFAULT: (serverId: string) =>
-    new Route<MetadataServer.DataSetServerDefaultPermission>(MethodRequest.PUT, `/servers/${serverId}/permissions/default`),
+    new Route<MetadataServer.DataSetServerDefaultPermission, RoutePath.SERVERS>(MethodRequest.PUT, `/servers/${serverId}/permissions/default`, {
+      route: RoutePath.SERVERS
+    }),
 
 
-  ROLES_CREATE: (serverId: string) => 
-    new Route<MetadataServer.DataCreateRole>(MethodRequest.POST, `/servers/${serverId}/roles`),
+  ROLES_CREATE: (serverId: string) =>
+    new Route<MetadataServer.DataCreateRole, RoutePath.SERVERS>(MethodRequest.POST, `/servers/${serverId}/roles`, {
+      route: RoutePath.SERVERS
+    }),
   ROLES_DELETE: (serverId: string, roleId: string) =>
-    new Route<MetadataServer.DataCreateRole>(MethodRequest.DELETE, `/servers/${serverId}/roles/${roleId}`),
+    new Route<MetadataServer.DataCreateRole, RoutePath.SERVERS>(MethodRequest.DELETE, `/servers/${serverId}/roles/${roleId}`, {
+      route: RoutePath.SERVERS
+    }),
   ROLES_EDIT: (serverId: string, roleId: string) =>
-    new Route<MetadataServer.DataEditRole>(MethodRequest.PATCH, `/servers/${serverId}/roles/${roleId}`),
-  
+    new Route<MetadataServer.DataEditRole, RoutePath.SERVERS>(MethodRequest.PATCH, `/servers/${serverId}/roles/${roleId}`, {
+      route: RoutePath.SERVERS
+    }),
+
   SERVER_CREATE: () =>
-    new Route<MetadataServer.DataCreateServer>(MethodRequest.PATCH, `/servers/create`),
+    new Route<MetadataServer.DataCreateServer, RoutePath.SERVERS>(MethodRequest.PATCH, `/servers/create`, {
+      route: RoutePath.SERVERS
+    }),
   SERVER_DELETE: (serverId: string) =>
-    new Route<NoRequired>(MethodRequest.DELETE, `/servers/${serverId}`),
+    new Route<NoRequired, RoutePath.SERVERS>(MethodRequest.DELETE, `/servers/${serverId}`, {
+      route: RoutePath.SERVERS
+    }),
   SERVER_EDIT: (serverId: string) =>
-    new Route<MetadataServer.DataEditServer>(MethodRequest.PATCH, `/servers/${serverId}`),
+    new Route<MetadataServer.DataEditServer, RoutePath.SERVERS>(MethodRequest.PATCH, `/servers/${serverId}`, {
+      route: RoutePath.SERVERS
+    }),
   SERVER_GET: (serverId: string) =>
-    new Route<NoRequired>(MethodRequest.GET, `/servers/${serverId}`),
+    new Route<NoRequired, RoutePath.SERVERS>(MethodRequest.GET, `/servers/${serverId}`, {
+      route: RoutePath.SERVERS
+    }),
 }
 
 export const Customisation = {
-  EMOJI_FETCH: (id: string) => 
-    new Route<NoRequired>(MethodRequest.GET, `/customisation/${id}`),
+  EMOJI_FETCH: (id: string) =>
+    new Route<NoRequired, RoutePath.CUSTOM>(MethodRequest.GET, `/custom/${id}`, {
+      route: RoutePath.CUSTOM
+    }),
 }
 
 export const Invites = {
   INVITE_FETCH: (id: string) =>
-    new Route<NoRequired>(MethodRequest.GET, `/invites/${id}`),
+    new Route<NoRequired, RoutePath.INVITES>(MethodRequest.GET, `/invites/${id}`, {
+      route: RoutePath.INVITES
+    }),
 }
