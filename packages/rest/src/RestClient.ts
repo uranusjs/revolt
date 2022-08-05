@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { EventEmitter } from 'node:events';
 import { MethodRequest, Route } from './Route';
 
@@ -127,6 +127,13 @@ export class BucketManager {
     this.buckets = new Map()
   }
 
+  // API returns 429
+  setRatelimitBucket(id: string) {
+    if (this.buckets.get(id) !== undefined && this.buckets.get(id) !== null) {
+      this.buckets.get(id)!!.rateLimit = true
+    }
+  }
+
 
   getBucket(id: string, details?: DetailsBucket) {
     if (this.buckets.get(id) == undefined) {
@@ -226,11 +233,17 @@ export class RequestPacket extends EventEmitter {
 }
 
 export interface RequestOptions {
+  // JSON?
   body?: any;
+  // Endpoint is JSON
   isJson?: boolean;
+  // That endpoint needs of authentications
   isRequiredAuth?: boolean;
+  // Function for return metadata for ClientRest;
   queue?(data: any): Promise<void> | Function;
+  // Function for return status code;
   errStatusCode?(code: number): Promise<void> | Function;
+  // Function for return error;
   err?(err: Error): Promise<void> | Function;
 }
 export class RequestCreate {
@@ -248,6 +261,7 @@ export class RequestCreate {
     this.restClient = restClient
   }
 
+
   private prepareRoute(baseUrl: string, route: string) {
     return baseUrl + route
   }
@@ -260,7 +274,91 @@ export class RequestCreate {
     if (_requestOptions.isRequiredAuth) {
       options.headers['X-Session-Token'] = this.sessionToken
     }
-    const request = axios.get(this.prepareRoute(url, this.route.path))
+    const request = axios.get(this.prepareRoute(url, this.route.path), options)
+
+    this.managerPromise<M>(request, _requestOptions);
+  }
+
+  async PUT<M>(_requestOptions: RequestOptions) {
+    const url = `${API.PROTOCOL + API.URL}`
+    const options: any = {}
+
+    if (_requestOptions.body !== undefined) {
+      options.data = _requestOptions.body
+    }
+    const request = axios.put(this.prepareRoute(url, this.route.path), options)
+    
+    this.managerPromise<M>(request, _requestOptions);
+  }
+
+  async POST<M>(_requestOptions: RequestOptions) {
+    const url = `${API.PROTOCOL + API.URL}`
+    const options: any = {}
+
+    if (_requestOptions.body !== undefined) {
+      options.data = _requestOptions.body
+    }
+    const request = axios.post(this.prepareRoute(url, this.route.path), options)
+
+    this.managerPromise<M>(request, _requestOptions);
+  }
+
+
+  async PATCH<M>(_requestOptions: RequestOptions) {
+    const url = `${API.PROTOCOL + API.URL}`
+    const options: any = {}
+
+    if (_requestOptions.body !== undefined) {
+      options.data = _requestOptions.body
+    }
+    const request = axios.patch(this.prepareRoute(url, this.route.path), options)
+
+    this.managerPromise<M>(request, _requestOptions);
+  }
+
+
+  async DELETE<M>(_requestOptions: RequestOptions) {
+    const url = `${API.PROTOCOL + API.URL}`
+    const options: any = {}
+
+    if (_requestOptions.body !== undefined) {
+      options.data = _requestOptions.body
+    }
+    const request = axios.delete(this.prepareRoute(url, this.route.path), options)
+
+    this.managerPromise<M>(request, _requestOptions);
+  }
+
+
+  async OPTIONS<M>(_requestOptions: RequestOptions) {
+    const url = `${API.PROTOCOL + API.URL}`
+    const options: any = {}
+
+    if (_requestOptions.body !== undefined) {
+      options.data = _requestOptions.body
+    }
+    const request = axios.options(this.prepareRoute(url, this.route.path), options)
+
+    this.managerPromise<M>(request, _requestOptions);
+  }
+
+
+
+  async HEAD<M>(_requestOptions: RequestOptions) {
+    const url = `${API.PROTOCOL + API.URL}`
+    const options: any = {}
+
+    if (_requestOptions.body !== undefined) {
+      options.data = _requestOptions.body
+    }
+    const request = axios.head(this.prepareRoute(url, this.route.path), options)
+
+    this.managerPromise<M>(request, _requestOptions);
+  }
+
+
+
+  async managerPromise<M>(request: Promise<AxiosResponse<any, any>>, _requestOptions: RequestOptions) {
     request
       .then((http) => {
         const data = JSON.parse(http.data)
@@ -273,12 +371,6 @@ export class RequestCreate {
           throw error
         }
 
-        if (!(http.status >= 201)) {
-          if (_requestOptions.errStatusCode !== undefined) {
-            _requestOptions.errStatusCode(http.status)
-          }
-          throw new Error(`Status received is inappropriate: ${http.status}`);
-        }
 
         if (HeadersDetails.validateBucket(http.headers)) {
           const getBucketHeader = HeadersDetails.getBucket(http.headers)
@@ -289,43 +381,12 @@ export class RequestCreate {
             resetAfter: getBucketHeader['x-ratelimit-reset-after']
           })
 
-          if (bucket?.requests!! >= bucket?.limit!!) {
-            // Event!
+
+          if (http.status == 429) {
+            this.restClient.bucketManager?.setRatelimitBucket(bucket?.bucketId!!)
           }
 
-        }
 
-        const metadata: M = http.data
-        if (_requestOptions.queue !== undefined) {
-          _requestOptions.queue(metadata)
-        }
-        return metadata;
-      })
-      .catch((err) => {
-        if (_requestOptions.err !== undefined) {
-          _requestOptions.err(err)
-        }
-      })
-  }
-
-  async PUT<M>(_requestOptions: RequestOptions) {
-    const url = `${API.PROTOCOL + API.URL}`
-    const options: any = {}
-
-    if (_requestOptions.body !== undefined) {
-      options.data = _requestOptions.body
-    }
-    const request = axios.put(this.prepareRoute(url, this.route.path))
-    request
-      .then((http) => {
-        const data = JSON.parse(http.data)
-
-        if (http.status === 429) {
-          const error = new Error(`RateLimit: ${data.retry_after}`)
-          if (_requestOptions.err !== undefined) {
-            _requestOptions.err(error)
-          }
-          throw error
         }
 
         if (!(http.status >= 201)) {
@@ -335,16 +396,6 @@ export class RequestCreate {
           throw new Error(`Status received is inappropriate: ${http.status}`);
         }
 
-        if (HeadersDetails.validateBucket(http.headers)) {
-          const getBucketHeader = HeadersDetails.getBucket(http.headers)
-
-          this.restClient.bucketManager?.getBucket(getBucketHeader['x-ratelimit-bucket'], {
-            bucket: getBucketHeader['x-ratelimit-bucket'],
-            limit: getBucketHeader['x-ratelimit-limit'],
-            remaining: getBucketHeader['x-ratelimit-remaining'],
-            resetAfter: getBucketHeader['x-ratelimit-reset-after']
-          })
-        }
 
         const metadata: M = http.data
         if (_requestOptions.queue !== undefined) {
