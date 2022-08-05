@@ -274,6 +274,10 @@ export class RequestCreate {
     if (_requestOptions.isRequiredAuth) {
       options.headers['X-Session-Token'] = this.sessionToken
     }
+
+    if (_requestOptions.body !== undefined) {
+      options.data = _requestOptions.body
+    }
     const request = axios.get(this.prepareRoute(url, this.route.path), options)
 
     this.managerPromise<M>(request, _requestOptions);
@@ -282,6 +286,10 @@ export class RequestCreate {
   async PUT<M>(_requestOptions: RequestOptions) {
     const url = `${API.PROTOCOL + API.URL}`
     const options: any = {}
+
+    if (_requestOptions.isRequiredAuth) {
+      options.headers['X-Session-Token'] = this.sessionToken
+    }
 
     if (_requestOptions.body !== undefined) {
       options.data = _requestOptions.body
@@ -294,6 +302,10 @@ export class RequestCreate {
   async POST<M>(_requestOptions: RequestOptions) {
     const url = `${API.PROTOCOL + API.URL}`
     const options: any = {}
+
+    if (_requestOptions.isRequiredAuth) {
+      options.headers['X-Session-Token'] = this.sessionToken
+    }
 
     if (_requestOptions.body !== undefined) {
       options.data = _requestOptions.body
@@ -308,6 +320,10 @@ export class RequestCreate {
     const url = `${API.PROTOCOL + API.URL}`
     const options: any = {}
 
+    if (_requestOptions.isRequiredAuth) {
+      options.headers['X-Session-Token'] = this.sessionToken
+    }
+
     if (_requestOptions.body !== undefined) {
       options.data = _requestOptions.body
     }
@@ -321,6 +337,10 @@ export class RequestCreate {
     const url = `${API.PROTOCOL + API.URL}`
     const options: any = {}
 
+    if (_requestOptions.isRequiredAuth) {
+      options.headers['X-Session-Token'] = this.sessionToken
+    }
+
     if (_requestOptions.body !== undefined) {
       options.data = _requestOptions.body
     }
@@ -333,6 +353,10 @@ export class RequestCreate {
   async OPTIONS<M>(_requestOptions: RequestOptions) {
     const url = `${API.PROTOCOL + API.URL}`
     const options: any = {}
+    
+    if (_requestOptions.isRequiredAuth) {
+      options.headers['X-Session-Token'] = this.sessionToken
+    }
 
     if (_requestOptions.body !== undefined) {
       options.data = _requestOptions.body
@@ -347,6 +371,11 @@ export class RequestCreate {
   async HEAD<M>(_requestOptions: RequestOptions) {
     const url = `${API.PROTOCOL + API.URL}`
     const options: any = {}
+
+    if (_requestOptions.isRequiredAuth) {
+      options.headers['X-Session-Token'] = this.sessionToken
+    }
+
 
     if (_requestOptions.body !== undefined) {
       options.data = _requestOptions.body
