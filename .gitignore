@@ -1,7 +1,7 @@
 build/
 package-lock.json
 yarn.lock
-.vscode/
+launch.json
 .git/
 .idea/
 node_modules/

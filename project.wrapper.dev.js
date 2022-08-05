@@ -1,3 +1,4 @@
+console.clear()
 //
 // Compile subs projects!
 const ProjectWrapper = require('tsc-compile-projects')
@@ -56,6 +57,22 @@ class Wrapper {
       buildBase.on('endCompile', () => {
         console.log(`\n\n\n\n  >  :@uranusjs/typescript has been compiled successfully!`)
       })
+      process.stdin.on('data', (msg) => {
+        const message = msg.toString('utf-8')
+        if (message.startsWith(':clear')) {
+          console.clear()
+        }
+        if (message.startsWith(':usage')) {
+          console.log(process.cpuUsage())
+          console.log(process.resourceUsage())
+          console.log(process.memoryUsage())
+        }
+
+        if (message.startsWith(':projectWrapperSrc')) {
+          console.log(buildBase)
+        }
+       })
+
       buildBase.interpreter.on('debugData', ({ eventName, interpreter, parse }) => {
         switch (eventName) {
           case Events.STARTING_COMPILATION:
@@ -65,6 +82,7 @@ class Wrapper {
             console.log(`  | Typescript::${interpreter.projectName} > Error -> ${parse.metadata.messageOriginal}`)
             break
           default:
+
             break
         }
       })
