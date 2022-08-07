@@ -1,6 +1,6 @@
 const { RestClient, ServersRoute, RestAction } = require('@uranusjs/rest-revolt')
 const rest = new RestClient({
-  sessionToken: '6UR3YSN_SCC0CoNbJGn1XAir5By3TVdtUnff9aUsC5KapPef0W1qTSXKh5XbgaSk'
+  sessionToken: ''
 })
 
 
@@ -8,7 +8,7 @@ const rest = new RestClient({
 
 
 const create = async () => {
-  await rest.createRequest(ServersRoute.MEMBER_FETCH('01FFP0813XTASFCVBP0H97912T'), {
+  await rest.createRequest(ServersRoute.MEMBER_FETCH(''), {
     isRequiredAuth: true,
     queue: (data) => { console.log(data) },
     err: (err) => {
