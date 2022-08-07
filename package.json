@@ -6,7 +6,8 @@
   "scripts": {
     "postinstall": "node project.wrapper.js",
     "test": "jest",
-    ":dev-mode": "node project.wrapper.dev.js"
+    ":dev-mode": "node project.wrapper.dev.js",
+    "vitest": "vitest"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,7 @@
     "eslint-plugin-import": "^2.26.0",
     "jest": "^28.1.3",
     "tsc-compile-projects": "github:nayvcake/tsc-compile-projects#main",
+    "typescript": "^4.7.4",
     "vitest": "^0.20.3"
   },
   "dependencies": {

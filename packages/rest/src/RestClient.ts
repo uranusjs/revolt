@@ -2,11 +2,23 @@ import axios, { AxiosResponse } from 'axios';
 import { EventEmitter } from 'node:events';
 import { MethodRequest, Route } from './Route';
 
+export class RestAction {
+  timeoutRequest?: number;
+
+  setTimeoutRequest(timeout: number) {
+    this.timeoutRequest = timeout;
+    return this;
+  }
+  static createBuilder() {
+    return new RestAction();
+  }
+}
 
 export enum API {
   PROTOCOL = 'https://',
   URL = 'api.revolt.chat',
 }
+
 
 
 export interface DetailsBucket {
@@ -118,13 +130,24 @@ export class HeadersDetails {
 
 }
 export class BucketManager {
-  private readonly sessionToken!: string;
+  sessionToken!: string;
   buckets: Map<string, Bucket>
-  constructor(sessionToken: string) {
+  restClient?: RestClient;
+  constructor(sessionToken: string, restClient: RestClient) {
     if (sessionToken !== undefined && typeof sessionToken === 'string') {
       this.sessionToken = sessionToken
     }
+    if (restClient !== undefined) {
+      this.restClient = restClient;
+    }
     this.buckets = new Map()
+  }
+
+  createRequest(route: Route<any, any>, requestOptions: RequestOptions) {
+    if (!(this.restClient instanceof RestClient)) throw new Error('RestClient is invalid!');
+
+    const requestPacket = new RequestPacket(this.sessionToken, this.restClient);
+    return requestPacket.build(route, requestOptions);
   }
 
   // API returns 429
@@ -177,7 +200,7 @@ export interface RestClientI {
 
 
 export class RestClient {
-  private readonly sessionToken!: string;
+  sessionToken!: string;
   bucketManager?: BucketManager;
   constructor(restOptions: RestClientI) {
     if (restOptions !== undefined && restOptions !== null) {
@@ -189,8 +212,17 @@ export class RestClient {
       if (restOptions.bucketManager !== undefined) {
         this.bucketManager = restOptions.bucketManager;
       } else {
-        this.bucketManager = new BucketManager(this.sessionToken)
+        this.bucketManager = new BucketManager(this.sessionToken, this)
       }
+    }
+  }
+
+
+  createRequest<R, T>(route: Route<R, T>, requestOptions: RequestOptions) {
+    if (this.bucketManager !== undefined) {
+      return this.bucketManager.createRequest(route, requestOptions)
+    } else {
+      throw new Error('Missing bucket system!')
     }
   }
 }
@@ -215,7 +247,7 @@ export interface RequestPacket {
 }
 
 export class RequestPacket extends EventEmitter {
-  private readonly sessionToken!: string;
+  sessionToken!: string;
   restClient: RestClient | undefined;
   constructor(sessionToken: string, restClient: RestClient) {
     super();
@@ -227,8 +259,9 @@ export class RequestPacket extends EventEmitter {
     }
   }
 
-  build(route: Route<any, any>) {
+  build(route: Route<any, any>, requestOptions: RequestOptions) {
     return new RequestCreate(route, this, this.restClient!!, this.sessionToken)
+      .selectRequest(requestOptions)
   }
 }
 
@@ -242,12 +275,12 @@ export interface RequestOptions {
   // Function for return metadata for ClientRest;
   queue?(data: any): Promise<void> | Function;
   // Function for return status code;
-  errStatusCode?(code: number): Promise<void> | Function;
+  errStatusCode?(code: number, data?: any): Promise<void> | Function;
   // Function for return error;
   err?(err: Error): Promise<void> | Function;
 }
 export class RequestCreate {
-  private readonly sessionToken!: string;
+  sessionToken!: string;
   route: Route<any, any>;
   restClient: RestClient;
   requestManager: RequestPacket;
@@ -257,8 +290,40 @@ export class RequestCreate {
       this.sessionToken = sessionToken
     }
     this.route = route
+    if (route.method !== undefined) {
+      this.method = route.body;
+    }
     this.requestManager = requestPacket
     this.restClient = restClient
+  }
+
+  selectRequest<M>(_requestOptions: RequestOptions) {
+    switch (this.route.method) {
+      case MethodRequest.GET: {
+        return this.GET<M>(_requestOptions)
+      }
+      case MethodRequest.DELETE: {
+        return this.DELETE<M>(_requestOptions)
+      }
+      case MethodRequest.HEAD: {
+        return this.HEAD<M>(_requestOptions)
+      }
+      case MethodRequest.OPTIONS: {
+        return this.OPTIONS<M>(_requestOptions)
+      }
+      case MethodRequest.PATCH: {
+        return this.PATCH<M>(_requestOptions)
+      }
+      case MethodRequest.POST: {
+        return this.POST<M>(_requestOptions)
+      }
+      case MethodRequest.PUT: {
+        return this.PUT<M>(_requestOptions)
+      }
+      default:
+        throw new Error('RequestMethod invalid: ' + this.method);
+
+    }
   }
 
 
@@ -270,41 +335,55 @@ export class RequestCreate {
     this.method = MethodRequest.GET;
     const url = `${API.PROTOCOL + API.URL}`
     const options: any = {}
-
-    if (_requestOptions.isRequiredAuth) {
-      options.headers['X-Session-Token'] = this.sessionToken
+    if (_requestOptions.isRequiredAuth !== undefined) {
+      if (_requestOptions.isRequiredAuth) {
+        options.headers = {
+          'X-Session-Token': this.sessionToken,
+          'Content-Type': 'application/json'
+        }
+      }
     }
+
 
     if (_requestOptions.body !== undefined) {
       options.data = _requestOptions.body
     }
     const request = axios.get(this.prepareRoute(url, this.route.path), options)
 
-    this.managerPromise<M>(request, _requestOptions);
+    return this.managerPromise<M>(request, _requestOptions);
   }
 
   async PUT<M>(_requestOptions: RequestOptions) {
     const url = `${API.PROTOCOL + API.URL}`
     const options: any = {}
 
-    if (_requestOptions.isRequiredAuth) {
-      options.headers['X-Session-Token'] = this.sessionToken
+    if (_requestOptions.isRequiredAuth !== undefined) {
+      if (_requestOptions.isRequiredAuth) {
+        options.headers = {
+          'X-Session-Token': this.sessionToken,
+          'Content-Type': 'application/json'
+        }
+      }
     }
 
     if (_requestOptions.body !== undefined) {
       options.data = _requestOptions.body
     }
     const request = axios.put(this.prepareRoute(url, this.route.path), options)
-    
-    this.managerPromise<M>(request, _requestOptions);
+
+    return this.managerPromise<M>(request, _requestOptions);
   }
 
   async POST<M>(_requestOptions: RequestOptions) {
     const url = `${API.PROTOCOL + API.URL}`
     const options: any = {}
-
-    if (_requestOptions.isRequiredAuth) {
-      options.headers['X-Session-Token'] = this.sessionToken
+    if (_requestOptions.isRequiredAuth !== undefined) {
+      if (_requestOptions.isRequiredAuth) {
+        options.headers = {
+          'X-Session-Token': this.sessionToken,
+          'Content-Type': 'application/json'
+        }
+      }
     }
 
     if (_requestOptions.body !== undefined) {
@@ -312,7 +391,7 @@ export class RequestCreate {
     }
     const request = axios.post(this.prepareRoute(url, this.route.path), options)
 
-    this.managerPromise<M>(request, _requestOptions);
+    return this.managerPromise<M>(request, _requestOptions);
   }
 
 
@@ -320,16 +399,20 @@ export class RequestCreate {
     const url = `${API.PROTOCOL + API.URL}`
     const options: any = {}
 
-    if (_requestOptions.isRequiredAuth) {
-      options.headers['X-Session-Token'] = this.sessionToken
+    if (_requestOptions.isRequiredAuth !== undefined) {
+      if (_requestOptions.isRequiredAuth) {
+        options.headers = {
+          'X-Session-Token': this.sessionToken,
+          'Content-Type': 'application/json'
+        }
+      }
     }
-
     if (_requestOptions.body !== undefined) {
       options.data = _requestOptions.body
     }
     const request = axios.patch(this.prepareRoute(url, this.route.path), options)
 
-    this.managerPromise<M>(request, _requestOptions);
+    return this.managerPromise<M>(request, _requestOptions);
   }
 
 
@@ -337,8 +420,13 @@ export class RequestCreate {
     const url = `${API.PROTOCOL + API.URL}`
     const options: any = {}
 
-    if (_requestOptions.isRequiredAuth) {
-      options.headers['X-Session-Token'] = this.sessionToken
+    if (_requestOptions.isRequiredAuth !== undefined) {
+      if (_requestOptions.isRequiredAuth) {
+        options.headers = {
+          'X-Session-Token': this.sessionToken,
+          'Content-Type': 'application/json'
+        }
+      }
     }
 
     if (_requestOptions.body !== undefined) {
@@ -346,16 +434,21 @@ export class RequestCreate {
     }
     const request = axios.delete(this.prepareRoute(url, this.route.path), options)
 
-    this.managerPromise<M>(request, _requestOptions);
+    return this.managerPromise<M>(request, _requestOptions);
   }
 
 
   async OPTIONS<M>(_requestOptions: RequestOptions) {
     const url = `${API.PROTOCOL + API.URL}`
     const options: any = {}
-    
-    if (_requestOptions.isRequiredAuth) {
-      options.headers['X-Session-Token'] = this.sessionToken
+
+    if (_requestOptions.isRequiredAuth !== undefined) {
+      if (_requestOptions.isRequiredAuth) {
+        options.headers = {
+          'X-Session-Token': this.sessionToken,
+          'Content-Type': 'application/json'
+        }
+      }
     }
 
     if (_requestOptions.body !== undefined) {
@@ -363,7 +456,7 @@ export class RequestCreate {
     }
     const request = axios.options(this.prepareRoute(url, this.route.path), options)
 
-    this.managerPromise<M>(request, _requestOptions);
+    return this.managerPromise<M>(request, _requestOptions);
   }
 
 
@@ -372,8 +465,13 @@ export class RequestCreate {
     const url = `${API.PROTOCOL + API.URL}`
     const options: any = {}
 
-    if (_requestOptions.isRequiredAuth) {
-      options.headers['X-Session-Token'] = this.sessionToken
+    if (_requestOptions.isRequiredAuth !== undefined) {
+      if (_requestOptions.isRequiredAuth) {
+        options.headers = {
+          'X-Session-Token': this.sessionToken,
+          'Content-Type': 'application/json'
+        }
+      }
     }
 
 
@@ -382,13 +480,14 @@ export class RequestCreate {
     }
     const request = axios.head(this.prepareRoute(url, this.route.path), options)
 
-    this.managerPromise<M>(request, _requestOptions);
+    return this.managerPromise<M>(request, _requestOptions);
   }
 
 
 
   async managerPromise<M>(request: Promise<AxiosResponse<any, any>>, _requestOptions: RequestOptions) {
-    request
+
+    return request
       .then((http) => {
         const data = JSON.parse(http.data)
 
@@ -428,14 +527,41 @@ export class RequestCreate {
 
         const metadata: M = http.data
         if (_requestOptions.queue !== undefined) {
+
           _requestOptions.queue(metadata)
         }
         return metadata;
       })
       .catch((err) => {
         if (_requestOptions.err !== undefined) {
+          if (err.response !== undefined) {
+
+            if (err.response.headers !== undefined) {
+              if (HeadersDetails.validateBucket(err.response.headers)) {
+                const getBucketHeader = HeadersDetails.getBucket(err.response.headers)
+                const bucket = this.restClient.bucketManager?.getBucket(getBucketHeader['x-ratelimit-bucket'], {
+                  bucket: getBucketHeader['x-ratelimit-bucket'],
+                  limit: getBucketHeader['x-ratelimit-limit'],
+                  remaining: getBucketHeader['x-ratelimit-remaining'],
+                  resetAfter: getBucketHeader['x-ratelimit-reset-after']
+                })
+
+
+                if (err.response.status == 429) {
+                  this.restClient.bucketManager?.setRatelimitBucket(bucket?.bucketId!!)
+                }
+              }
+            }
+            if (err.response.status >= 201) {
+              // err.response.data
+              if (_requestOptions.errStatusCode !== undefined) {
+                _requestOptions.errStatusCode(parseInt(err.response.status), err.response.data == undefined ? {} : err.response.data)
+              }
+            }
+          }
           _requestOptions.err(err)
         }
+
       })
   }
 

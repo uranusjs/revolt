@@ -3,7 +3,7 @@
   "main": "./build/src/index.js",
   "version": "1.0.0",
   "types": "./build/src/index.d.ts",
-  "typings": "./build/index.d.ts",
+  "typings": "./build/src/index.d.ts",
   "module": "module",
   "exports": "./build/src/index.js",
   "dependencies": {
