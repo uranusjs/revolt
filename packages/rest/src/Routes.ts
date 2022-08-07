@@ -6,8 +6,8 @@ import type { OptionsQueryMessages } from './query/channels/channelQuery';
 import { MethodRequest, NoRequired, Route, RoutePath } from './Route';
 
 export const UsersRoute = {
-  FETCH_USER: new Route(MethodRequest.GET, '/users/{target}/profile'),
-  FETCH_DM: new Route(MethodRequest.GET, '/users/{dm}'),
+  FETCH_USER: (target: string) => new Route(MethodRequest.GET, `/users/${target}/profile`),
+  FETCH_DM: (dm: string) => new Route(MethodRequest.GET, `/users/${dm}`),
 }
 
 export const ChannelsRoute = {
