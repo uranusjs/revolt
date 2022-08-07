@@ -7,7 +7,7 @@
     "lib": [
       "ES2021"
     ],
-    "module": "ESNext",
+    "module": "NodeNext",
     "target": "ES2021",
     "moduleResolution": "Node",
     "resolveJsonModule": true,

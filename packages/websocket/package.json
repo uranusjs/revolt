@@ -13,5 +13,10 @@
     "types": "./build/index.d.ts"
   },
   "license": "ISC",
-  "packageManager": "yarn@6.3.2"
+  "packageManager": "yarn@6.3.2",
+  "dependencies": {
+    "@types/ws": "^8.5.3",
+    "events": "^3.3.0",
+    "ws": "^8.8.1"
+  }
 }
