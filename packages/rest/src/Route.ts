@@ -26,14 +26,14 @@ export interface RouteSpecifications<T, R> {
 }
 export interface BodyRouteRequired<_> { }
 export interface NoRequired { }
-export class Route<T, R> {
+export class Route<Body, Route> {
   method: MethodRequest;
   path: string;
-  body?: T;
-  route?: R | null;
+  body?: Body;
+  route?: Route | null;
   template?: string;
 
-  constructor(method: MethodRequest, path: string, routeSpecifications?: RouteSpecifications<T, R>) {
+  constructor(method: MethodRequest, path: string, routeSpecifications?: RouteSpecifications<Body, Route>) {
     this.method = method;
     this.path = `${path}`;
     
@@ -53,7 +53,7 @@ export class Route<T, R> {
     this.route = null;
   }
 
-  setMetadata(body: T) {
+  setMetadata(body: Body) {
     this.body = body;
     return this;
   }

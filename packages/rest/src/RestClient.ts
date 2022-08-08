@@ -2,15 +2,221 @@ import axios, { AxiosResponse } from 'axios';
 import { EventEmitter } from 'node:events';
 import { MethodRequest, Route } from './Route';
 
-export class RestAction {
+export interface RestActionRelieve {
+  route: Route<any, any>;
+  requestOptions: RequestOptions;
+}
+
+export interface RestActionI<R, T> {
+  rest: RestClient;
+  route: Route<R, T>;
+  requestOptions: RequestOptions;
+}
+
+export class RestAction<Body, R, Metadata> extends EventEmitter {
   timeoutRequest?: number;
+  private metadata?: Metadata;
+  private route: Route<Body, R>;
+  private rest: RestClient;
+  private requestOptions: RequestOptions;
+
+  constructor(rest: RestClient, route: Route<Body, R>, requestOptions: RequestOptions) {
+    super();
+    this.rest = rest;
+    this.route = route;
+    this.requestOptions = requestOptions;
+  }
 
   setTimeoutRequest(timeout: number) {
     this.timeoutRequest = timeout;
     return this;
   }
-  static createBuilder() {
-    return new RestAction();
+
+  getMetadata() {
+    if (this.metadata !== undefined) {
+      return this.metadata;
+    }
+    return null
+  }
+
+  /**
+ * This is to perform request actions and return metadata without having to rely on promises and async. 
+ * You can use any way to get the metadata.
+ * 
+ * ```js
+ *    FactoryData.get().queue((data) => {
+ *         ... your code!
+ *          console.log(data)
+ *    })
+ * ```
+ * To receive status code errors or errors formulated by NodeJS or request management try these here.
+ * ```js
+ *     FactoryData.get()
+ *        .queue((data) => {
+ *              ... your code!
+ *         })
+ *        .err((error) => {
+ *              // OBS: You may end up receiving the API metadata when you return some strange error because of Axios and I recommend tracking by fields error or data
+ *              console.error(error)
+ *        })
+ * ``` 
+ * 
+ * There are possibilities for you to track status code when API returns to your Client.
+ * 
+ * ```js
+ *    FactoryData.get()
+ *      .queue((data) => {
+ *              ... your code!
+ *      })
+ *      .err((error) => {
+ *              // OBS: You may end up receiving the API metadata when you return some strange error because of Axios and I recommend tracking by fields error or data
+ *              console.error(error)
+ *      })
+ *      .errStatusCode((code) => {
+ *               ... Your code!
+ *                    or
+ *              console.log(errStatusCode)
+ *      })
+ * ``` 
+ * 
+ * 
+ * 
+ *
+ * Remembering you can receive the request manager and executioner by the queue
+ * ```js
+ *    FactoryData.get().queue((data, message) => {
+ *        message.edit('Hello world!')
+ *    })
+ * ```
+ */
+  queue(dataFunction: Promise<void> | Function | void | any) {
+    const toRequest = async () => {
+      this.requestOptions.queue = (d) => dataFunction(d);
+      this.requestOptions.err = (e) => this.error(e);
+      this.requestOptions.errStatusCode = (e) => this.errStatusCode(e);
+      await this.rest.createRequest(this.route, this.requestOptions);
+    }
+    toRequest()
+    return this;
+  }
+
+  /**
+ * This is to perform request actions and return metadata without having to rely on promises and async. 
+ * You can use any way to get the metadata.
+ * 
+ * ```js
+ *    FactoryData.get().queue((data) => {
+ *         ... your code!
+ *          console.log(data)
+ *    })
+ * ```
+ * To receive status code errors or errors formulated by NodeJS or request management try these here.
+ * ```js
+ *     FactoryData.get()
+ *        .queue((data) => {
+ *              ... your code!
+ *         })
+ *        .err((error) => {
+ *              // OBS: You may end up receiving the API metadata when you return some strange error because of Axios and I recommend tracking by fields error or data
+ *              console.error(error)
+ *        })
+ * ``` 
+ * 
+ * There are possibilities for you to track status code when API returns to your Client.
+ * 
+ * ```js
+ *    FactoryData.get()
+ *      .queue((data) => {
+ *              ... your code!
+ *      })
+ *      .err((error) => {
+ *              // OBS: You may end up receiving the API metadata when you return some strange error because of Axios and I recommend tracking by fields error or data
+ *              console.error(error)
+ *      })
+ *      .errStatusCode((code) => {
+ *               ... Your code!
+ *                    or
+ *              console.log(errStatusCode)
+ *      })
+ * ``` 
+ * 
+ * 
+ * 
+ *
+ * Remembering you can receive the request manager and executioner by the queue
+ * ```js
+ *    FactoryData.get().queue((data, message) => {
+ *        message.edit('Hello world!')
+ *    })
+ * ```
+ */
+  error(err: Promise<void> | Function | void | Error | any) {
+    this.requestOptions.err = (e: Error) => {
+      err(e)
+    }
+    return;
+  }
+
+  /**
+ * This is to perform request actions and return metadata without having to rely on promises and async. 
+ * You can use any way to get the metadata.
+ * 
+ * ```js
+ *    FactoryData.get().queue((data) => {
+ *         ... your code!
+ *          console.log(data)
+ *    })
+ * ```
+ * To receive status code errors or errors formulated by NodeJS or request management try these here.
+ * ```js
+ *     FactoryData.get()
+ *        .queue((data) => {
+ *              ... your code!
+ *         })
+ *        .err((error) => {
+ *              // OBS: You may end up receiving the API metadata when you return some strange error because of Axios and I recommend tracking by fields error or data
+ *              console.error(error)
+ *        })
+ * ``` 
+ * 
+ * There are possibilities for you to track status code when API returns to your Client.
+ * 
+ * ```js
+ *    FactoryData.get()
+ *      .queue((data) => {
+ *              ... your code!
+ *      })
+ *      .err((error) => {
+ *              // OBS: You may end up receiving the API metadata when you return some strange error because of Axios and I recommend tracking by fields error or data
+ *              console.error(error)
+ *      })
+ *      .errStatusCode((code) => {
+ *               ... Your code!
+ *                    or
+ *              console.log(errStatusCode)
+ *      })
+ * ``` 
+ * 
+ * 
+ * 
+ *
+ * Remembering you can receive the request manager and executioner by the queue
+ * ```js
+ *    FactoryData.get().queue((data, message) => {
+ *        message.edit('Hello world!')
+ *    })
+ * ```
+ */
+  errStatusCode(err: Promise<void> | Function | void | any) {
+    this.requestOptions.errStatusCode = (e: number) => {
+      err(e)
+    }
+    return;
+  }
+
+
+  static create<R, T, M>(options: RestActionI<R, T>) {
+    return new RestAction<R, T, M>(options.rest, options.route, options.requestOptions);
   }
 }
 
@@ -273,11 +479,161 @@ export interface RequestOptions {
   // That endpoint needs of authentications
   isRequiredAuth?: boolean;
   // Function for return metadata for ClientRest;
-  queue?(data: any): Promise<void> | Function;
+  /**
+ * This is to perform request actions and return metadata without having to rely on promises and async. 
+ * You can use any way to get the metadata.
+ * 
+ * ```js
+ *    FactoryData.get().queue((data) => {
+ *         ... your code!
+ *          console.log(data)
+ *    })
+ * ```
+ * To receive status code errors or errors formulated by NodeJS or request management try these here.
+ * ```js
+ *     FactoryData.get()
+ *        .queue((data) => {
+ *              ... your code!
+ *         })
+ *        .err((error) => {
+ *              // OBS: You may end up receiving the API metadata when you return some strange error because of Axios and I recommend tracking by fields error or data
+ *              console.error(error)
+ *        })
+ * ``` 
+ * 
+ * There are possibilities for you to track status code when API returns to your Client.
+ * 
+ * ```js
+ *    FactoryData.get()
+ *      .queue((data) => {
+ *              ... your code!
+ *      })
+ *      .err((error) => {
+ *              // OBS: You may end up receiving the API metadata when you return some strange error because of Axios and I recommend tracking by fields error or data
+ *              console.error(error)
+ *      })
+ *      .errStatusCode((code) => {
+ *               ... Your code!
+ *                    or
+ *              console.log(errStatusCode)
+ *      })
+ * ``` 
+ * 
+ * 
+ * 
+ *
+ * Remembering you can receive the request manager and executioner by the queue
+ * ```js
+ *    FactoryData.get().queue((data, message) => {
+ *        message.edit('Hello world!')
+ *    })
+ * ```
+ */
+  queue?(data: any): Promise<void> | Function | void;
   // Function for return status code;
-  errStatusCode?(code: number, data?: any): Promise<void> | Function;
+  /**
+ * This is to perform request actions and return metadata without having to rely on promises and async. 
+ * You can use any way to get the metadata.
+ * 
+ * ```js
+ *    FactoryData.get().queue((data) => {
+ *         ... your code!
+ *          console.log(data)
+ *    })
+ * ```
+ * To receive status code errors or errors formulated by NodeJS or request management try these here.
+ * ```js
+ *     FactoryData.get()
+ *        .queue((data) => {
+ *              ... your code!
+ *         })
+ *        .err((error) => {
+ *              // OBS: You may end up receiving the API metadata when you return some strange error because of Axios and I recommend tracking by fields error or data
+ *              console.error(error)
+ *        })
+ * ``` 
+ * 
+ * There are possibilities for you to track status code when API returns to your Client.
+ * 
+ * ```js
+ *    FactoryData.get()
+ *      .queue((data) => {
+ *              ... your code!
+ *      })
+ *      .err((error) => {
+ *              // OBS: You may end up receiving the API metadata when you return some strange error because of Axios and I recommend tracking by fields error or data
+ *              console.error(error)
+ *      })
+ *      .errStatusCode((code) => {
+ *               ... Your code!
+ *                    or
+ *              console.log(errStatusCode)
+ *      })
+ * ``` 
+ * 
+ * 
+ * 
+ *
+ * Remembering you can receive the request manager and executioner by the queue
+ * ```js
+ *    FactoryData.get().queue((data, message) => {
+ *        message.edit('Hello world!')
+ *    })
+ * ```
+ */
+  errStatusCode?(code: number, data?: any): Promise<void> | Function | void;
   // Function for return error;
-  err?(err: Error): Promise<void> | Function;
+  /**
+ * This is to perform request actions and return metadata without having to rely on promises and async. 
+ * You can use any way to get the metadata.
+ * 
+ * ```js
+ *    FactoryData.get().queue((data) => {
+ *         ... your code!
+ *          console.log(data)
+ *    })
+ * ```
+ * To receive status code errors or errors formulated by NodeJS or request management try these here.
+ * ```js
+ *     FactoryData.get()
+ *        .queue((data) => {
+ *              ... your code!
+ *         })
+ *        .err((error) => {
+ *              // OBS: You may end up receiving the API metadata when you return some strange error because of Axios and I recommend tracking by fields error or data
+ *              console.error(error)
+ *        })
+ * ``` 
+ * 
+ * There are possibilities for you to track status code when API returns to your Client.
+ * 
+ * ```js
+ *    FactoryData.get()
+ *      .queue((data) => {
+ *              ... your code!
+ *      })
+ *      .err((error) => {
+ *              // OBS: You may end up receiving the API metadata when you return some strange error because of Axios and I recommend tracking by fields error or data
+ *              console.error(error)
+ *      })
+ *      .errStatusCode((code) => {
+ *               ... Your code!
+ *                    or
+ *              console.log(errStatusCode)
+ *      })
+ * ``` 
+ * 
+ * 
+ * 
+ *
+ * Remembering you can receive the request manager and executioner by the queue
+ * ```js
+ *    FactoryData.get().queue((data, message) => {
+ *        message.edit('Hello world!')
+ *    })
+ * ```
+ */
+  err?(err: Error): Promise<void> | Function | void;
 }
 export class RequestCreate {
   sessionToken!: string;
