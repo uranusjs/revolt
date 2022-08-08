@@ -13,5 +13,11 @@
     "types": "./build/index.d.ts"
   },
   "license": "ISC",
+  "dependencies": {
+    "@uranusjs/models-revolt": "^1.0.0",
+    "@uranusjs/rest-revolt": "^1.0.0",
+    "@uranusjs/ws-revolt": "^1.0.0",
+    "events": "^3.3.0"
+  },
   "packageManager": "yarn@6.3.2"
 }
