@@ -13,6 +13,11 @@ export interface DirectMessageStruct {
 }
 
 
+export interface ReplyStruct {
+  id: string;
+  mention: boolean;
+}
+
 export interface GroupStruct {
   _id: string;
   name: string;

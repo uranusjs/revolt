@@ -1,7 +1,6 @@
 import { RestClient } from '@uranusjs/rest-revolt';
 import { WebsocketClient } from '@uranusjs/ws-revolt';
 import { DataStorageBase } from './data/DataStorage';
-import type { ChannelData } from './data/structures/ChannelData';
 import type { MemberData } from './data/structures/MemberData';
 import type { ServerData } from './data/structures/ServerData';
 import type { Channel, DirectMessage, Group, SavedMessages, TextChannel, VoiceChannel } from './entity/Channel';

@@ -27,11 +27,14 @@ export const ChannelsRoute = {
       template: '/channels/{id}'
     }),
 
-
+  MESSAGE_SEND: (id: string) => new Route<MetadataChannel.OptionsBulkDelete, RoutePath.CHANNELS>(MethodRequest.POST, `/channels/${id}/messages`, {
+    route: RoutePath.CHANNELS,
+    template: '/channels/{id}/messages'
+  }),
   MESSAGE_BULK_DELETE: (id: string) =>
     new Route<MetadataChannel.OptionsBulkDelete, RoutePath.CHANNELS>(MethodRequest.DELETE, `/channels/${id}/messages/bulk`, {
       route: RoutePath.CHANNELS,
-      template: '/channels/{id}'
+      template: '/channels/{id}/messages/bulk'
     }),
   MESSAGE_CLEAR_REACTIONS: (channelId: string, id: string) =>
     new Route<NoRequired, RoutePath.CHANNELS>(MethodRequest.DELETE, `/channels/${channelId}/messages/${id}/reactions`, {
