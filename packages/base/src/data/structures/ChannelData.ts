@@ -1,5 +1,6 @@
 import type { FileStruct, InteractionsStruct, MasqueradeStruct, PartialChannelStruct, ReplyStruct, SendableEmbedStruct } from '@uranusjs/models-revolt';
-import { ChannelsRoute, DataEditChannel, RestClient, RoutePath } from '@uranusjs/rest-revolt';
+import { ChannelsRoute, DataEditChannel, MessageUnreactOptions, NoRequired, RestClient, RoutePath } from '@uranusjs/rest-revolt';
+import type { OptionsQueryMessages } from '@uranusjs/rest-revolt/build/src/query/channels/channelQuery';
 import { RestBase } from 'src/rest/RestBase';
 
 export interface DataMessageSend {
@@ -15,6 +16,7 @@ export interface DataMessageSend {
 
 export class ChannelData {
   id?: string;
+  type?: string;
   name?: string;
   owner?: string;
   description?: string;
@@ -33,6 +35,9 @@ export class ChannelData {
   updateDate(data?: PartialChannelStruct) {
     if (data?.name !== undefined) {
       this.name = data.name;
+    }
+    if (data?.type !== undefined) {
+      this.type = data.type;
     }
     if (data?.owner !== undefined) {
       this.owner = data.owner
@@ -172,6 +177,7 @@ export class ChannelRest<TypeChannel> extends ChannelData {
   }
 
   sendMessage(messageOption: string | DataMessageSend) {
+    
     let d;
     if (typeof messageOption == 'string') {
       d = messageOption
@@ -202,7 +208,7 @@ export class ChannelRest<TypeChannel> extends ChannelData {
       d = messageOption;
     }
 
-    return this.restBase.executeAction<RoutePath.CHANNELS, DataEditChannel, TypeChannel>({
+    return this.restBase.executeAction<RoutePath.CHANNELS, any, TypeChannel>({
       route: ChannelsRoute.MESSAGE_SEND(this.channelData.id!!),
       requestOptions: {
         body: d,
@@ -211,6 +217,61 @@ export class ChannelRest<TypeChannel> extends ChannelData {
       }
     })
   }
+
+  messageDelete(id: string) {
+    return this.restBase.executeAction<RoutePath.CHANNELS, NoRequired, TypeChannel>({
+      route: ChannelsRoute.MESSAGE_DELETE(this.channelData.id!!, id),
+      requestOptions: {
+        body: undefined,
+        isJson: true,
+        isRequiredAuth: true,
+      }
+    })
+  }
+
+  messageQuery(id: string, options: OptionsQueryMessages) {
+    return this.restBase.executeAction<RoutePath.CHANNELS, NoRequired, TypeChannel>({
+      route: ChannelsRoute.MESSAGE_QUERY(this.channelData.id!!, id, options),
+      requestOptions: {
+        body: undefined,
+        isJson: true,
+        isRequiredAuth: true,
+      }
+    })
+  }
+  
+
+  messageReact(id: string, emoji: string) {
+    return this.restBase.executeAction<RoutePath.CHANNELS, NoRequired, TypeChannel>({
+      route: ChannelsRoute.MESSAGE_REACT(this.channelData.id!!, id, emoji),
+      requestOptions: {
+        body: undefined,
+        isJson: true,
+        isRequiredAuth: true,
+      }
+    })
+  }
+
+  messageUnreact(id: string, options: MessageUnreactOptions) {
+    return this.restBase.executeAction<RoutePath.CHANNELS, NoRequired, TypeChannel>({
+      route: ChannelsRoute.MESSAGE_UNREACT(this.channelData.id!!, id, options),
+      requestOptions: {
+        body: undefined,
+        isJson: true,
+        isRequiredAuth: true,
+      }
+    })
+  }
+
+  permissionsSet() {
+    // TODO: Permissions Manager soon!
+  }
+
+  permissionsSetDefault() {
+    // TODO: Permissions Manager soon!
+  }
+
+
 }
 
 
