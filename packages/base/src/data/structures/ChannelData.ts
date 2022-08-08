@@ -230,6 +230,30 @@ export class ChannelRest<TypeChannel> extends ChannelData {
   }
 
   messageQuery(id: string, options: OptionsQueryMessages) {
+    if (typeof id !== 'string') throw new Error('ID is string!');
+    if (options !== undefined) {
+      if (typeof options !== 'object') throw new Error('options is Object.');
+      if (options.after !== undefined) {
+        if (typeof options.after !== 'string') throw new Error('options.after is String!');
+      }
+      if (options.before !== undefined) {
+        if (typeof options.before !== 'string') throw new Error('options.before is String!');
+      }
+      if (options.includeUsers !== undefined) {
+        if (typeof options.includeUsers !== 'boolean') throw new Error('options.after is Boolean!');
+      }
+      if (options.limit !== undefined) {
+        if (typeof options.limit !== 'number') throw new Error('options.after is Number!');
+      }
+      if (options.nearby !== undefined) {
+        if (typeof options.nearby !== 'number') throw new Error('options.nearby is String!');
+      }
+      if (options.sort !== undefined) {
+        if (typeof options.sort !== 'number') throw new Error('options.nearby is Number/Enum!');
+      }
+    } else {
+      throw new Error('.messageQuery(id: string, options: OptionsQueryMessages): options is required');
+    }
     return this.restBase.executeAction<RoutePath.CHANNELS, NoRequired, TypeChannel>({
       route: ChannelsRoute.MESSAGE_QUERY(this.channelData.id!!, id, options),
       requestOptions: {
@@ -242,6 +266,8 @@ export class ChannelRest<TypeChannel> extends ChannelData {
   
 
   messageReact(id: string, emoji: string) {
+    if (typeof id !== 'string') throw new Error('ID is string!');
+    if (typeof emoji !== 'string') throw new Error('emoji is string!');
     return this.restBase.executeAction<RoutePath.CHANNELS, NoRequired, TypeChannel>({
       route: ChannelsRoute.MESSAGE_REACT(this.channelData.id!!, id, emoji),
       requestOptions: {
@@ -253,6 +279,24 @@ export class ChannelRest<TypeChannel> extends ChannelData {
   }
 
   messageUnreact(id: string, options: MessageUnreactOptions) {
+    if (typeof id !== 'string') throw new Error('ID is string!');
+    if (options !== undefined) {
+      if (typeof options !== 'object') throw new Error('options is Object!');
+      if (options.emoji !== undefined) {
+        if (typeof options.emoji !== 'string') throw new Error('options.emoji is String!');
+      }
+      if (options.extendOptions !== undefined) {
+        if (options.extendOptions.user_id !== undefined) {
+          if (typeof options.extendOptions.user_id !== 'string') throw new Error('options.extendOptions.user_id is String!');
+        }
+        if (options.extendOptions.remove_all !== undefined) {
+          if (typeof options.extendOptions.user_id !== 'boolean') throw new Error('options.extendOptions.remove_all is String!');
+        }
+      }
+    } else {
+      throw new Error('Options is required');
+      
+    }
     return this.restBase.executeAction<RoutePath.CHANNELS, NoRequired, TypeChannel>({
       route: ChannelsRoute.MESSAGE_UNREACT(this.channelData.id!!, id, options),
       requestOptions: {
