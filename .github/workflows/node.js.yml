@@ -25,7 +25,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       # Run info workspaces
-      - run: yarn workpaces info
+      - run: yarn workspaces info
       # Install dependencies
       - run: yarn install
       - run: npm ci
