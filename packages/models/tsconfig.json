@@ -5,15 +5,18 @@
     /* Projects */
     "composite": true,
     "lib": [
-      "ES2021"
+      "ES2021",
+      "ESNext",
+      "ES2022"
     ],
-    "module": "NodeNext",
-    "target": "ES2021",
+    "module": "Node16",
+    "target": "ESNext",
     "moduleResolution": "Node",
     "resolveJsonModule": true,
     /* Emit */
     "declaration": true,
-    "sourceMap": true, /* Create source map files for emitted JavaScript files. */                               /* Specify a file that bundles all outputs into one JavaScript file. If 'declaration' is true, also designates a file that bundles all .d.ts output. */
+    "declarationMap": true,
+    "sourceMap": true, /* Create source map files for emitted JavaScript files. */ /* Specify a file that bundles all outputs into one JavaScript file. If 'declaration' is true, also designates a file that bundles all .d.ts output. */
     "outDir": "build", /* Specify an output folder for all emitted files. */
     "preserveConstEnums": true,
     "importHelpers": true, /* Allow importing helper functions from tslib once per project, instead of including them per-file. */

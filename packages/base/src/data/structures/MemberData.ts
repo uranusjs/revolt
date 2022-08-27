@@ -1,12 +1,14 @@
 import type { FileStruct, MemberCompositeKeyStruct, MemberStruct } from '@uranusjs/models-revolt';
+import type { RestClient } from '@uranusjs/rest-revolt';
+import { RestBase } from '../../restAction/RestBase';
 
 export class MemberData {
-  _id?: MemberCompositeKeyStruct | string;
-  joinedAt?: number;
-  nickname?: string;
-  avatar?: FileStruct;
-  roles?: Array<string>;
-  timeout?: number;
+  _id: MemberCompositeKeyStruct | string | null = null;
+  joinedAt: number | null = null;
+  nickname: string | null = null;
+  avatar: FileStruct | null = null;
+  roles: Array<string> | null = null;
+  timeout: number | null = null;
   constructor(data?: MemberStruct) {
     if (data !== undefined) {
      this.updateData(data)
@@ -32,4 +34,15 @@ export class MemberData {
       this.timeout = data.timeout;
     }
   }
+}
+
+export class MemberRest extends MemberData {
+  private memberData!: MemberData;
+  private restBase!: RestBase;
+  constructor(restClient: RestClient, memberData: MemberData) {
+    super()
+    this.restBase = new RestBase(restClient);
+    this.memberData = memberData;
+  }
+
 }

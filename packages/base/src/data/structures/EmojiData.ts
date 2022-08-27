@@ -1,12 +1,12 @@
 import type { EmojiParent, EmojiStruct } from '@uranusjs/models-revolt';
 
 export class EmojiData {
-  _id?: string;
-  parent?: EmojiParent;
-  creatorId?: string;
-  name?: string;
-  animated?: boolean;
-  nsfw?: boolean;
+  _id: string | null = null;
+  parent: EmojiParent | null = null;
+  creatorId: string | null = null;
+  name: string | null = null;
+  animated: boolean | null = null;
+  nsfw: boolean | null = null;
   constructor(data?: EmojiStruct) {
     if (data !== undefined) {
      this.updateData(data)

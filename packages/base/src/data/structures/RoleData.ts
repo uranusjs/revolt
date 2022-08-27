@@ -1,11 +1,11 @@
 import type { RoleStruct } from '@uranusjs/models-revolt';
 
 export class RoleData {
-  name!: string;
-  permissions?: number;
-  colour?: string;
-  hoist?: boolean;
-  rank?: number;
+  name: string | null = null;
+  permissions: number | null = null;
+  colour: string | null = null;
+  hoist: boolean | null = null;
+  rank: number | null = null;
   constructor(data?: RoleStruct) {
     if (data !== undefined) {
       this.updateData(data)

@@ -217,3 +217,10 @@ export const Invites = {
       route: RoutePath.INVITES
     }),
 }
+
+export const Onboard = {
+  HELLO: () => new Route<NoRequired, RoutePath.ONBOARD>(MethodRequest.GET, '/onboard/hello', {
+    route: RoutePath.ONBOARD,
+    template: '/onboard/hello'
+  }),
+}

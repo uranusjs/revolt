@@ -10,3 +10,7 @@ export * from './data/structures/ServerData'
 
 // Websocket
 export * from './ws/WebSocketManager'
+
+export * from './entity/Channel'
+
+export * from './restAction/RestBase'

@@ -4,15 +4,18 @@
   "description": "",
   "private": true,
   "scripts": {
+    "start": "node ./test/client.js",
     "postinstall": "node project.wrapper.js",
     "test": "jest",
     ":dev-mode": "node project.wrapper.dev.js",
-    "vitest": "vitest"
+    "vitest": "vitest",
+    ":testApplication": "node ./test/client.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/uranusjs/revolt.git"
   },
+  "main": "./test/client.js",
   "author": "",
   "license": "ISC",
   "bugs": {

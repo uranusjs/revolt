@@ -1,11 +1,17 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
     /* Projects */
     "composite": true,
-    "module": "NodeNext",
-    "target": "ES2021",
-    "moduleResolution": "node",
+    "lib": [
+      "ES2021",
+      "ESNext",
+      "ES2022"
+    ],
+    "module": "Node16",
+    "target": "ESNext",
+    "moduleResolution": "Node",
     "resolveJsonModule": true,
     /* Emit */
     "declaration": true,

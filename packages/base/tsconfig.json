@@ -5,10 +5,12 @@
     /* Projects */
     "composite": true,
     "lib": [
-      "ES2021"
+      "ES2021",
+      "ESNext",
+      "ES2022"
     ],
-    "module": "NodeNext",
-    "target": "ES2021",
+    "module": "Node16",
+    "target": "ESNext",
     "moduleResolution": "Node",
     "resolveJsonModule": true,
     /* Emit */

@@ -1,7 +1,8 @@
 import type { FileStruct, InteractionsStruct, MasqueradeStruct, PartialChannelStruct, ReplyStruct, SendableEmbedStruct } from '@uranusjs/models-revolt';
 import { ChannelsRoute, DataEditChannel, MessageUnreactOptions, NoRequired, RestClient, RoutePath } from '@uranusjs/rest-revolt';
 import type { OptionsQueryMessages } from '@uranusjs/rest-revolt/build/src/query/channels/channelQuery';
-import { RestBase } from 'src/rest/RestBase';
+import { RestBase } from '../../restAction/RestBase';
+
 
 export interface DataMessageSend {
   nonce?: string;
@@ -15,29 +16,36 @@ export interface DataMessageSend {
 
 
 export class ChannelData {
-  id?: string;
-  type?: string;
-  name?: string;
-  owner?: string;
-  description?: string;
-  icon?: FileStruct;
-  nsfw?: boolean;
-  active?: boolean;
-  permissions?: number;
-  defaultPermissions?: number;
-  lastMessageId?: string;
+  id: string | null = null;
+  type: string | null = null;
+  name: string | null = null;
+  owner: string | null = null;
+  description: string | null = null;
+  icon: FileStruct | null = null;
+  nsfw: boolean | null = null;
+  active: boolean | null = null;
+  permissions: number | null = null;
+  defaultPermissions: number | null = null;
+  lastMessageId: string | null = null;
   constructor(data?: PartialChannelStruct) {
     if (data !== undefined) {
-      this.updateDate(data);
+      this.updateData(data);
     }
   }
 
-  updateDate(data?: PartialChannelStruct) {
+  updateData(data?: any | ChannelData) {
+    if (data?.id !== undefined) {
+      this.id = data.id;
+    } else if (data._id !== undefined) {
+      this.id = data._id;
+    }
+    if (data?.channel_type !== undefined) {
+      this.type = data.channel_type;
+    } else if (data?.type !== undefined) {
+      this.type = data.type;
+    }
     if (data?.name !== undefined) {
       this.name = data.name;
-    }
-    if (data?.type !== undefined) {
-      this.type = data.type;
     }
     if (data?.owner !== undefined) {
       this.owner = data.owner
@@ -63,6 +71,7 @@ export class ChannelData {
     if (data?.last_message_id !== undefined) {
       this.lastMessageId = data.last_message_id
     }
+    return this
   }
 }
 
@@ -177,10 +186,11 @@ export class ChannelRest<TypeChannel> extends ChannelData {
   }
 
   sendMessage(messageOption: string | DataMessageSend) {
-    
     let d;
     if (typeof messageOption == 'string') {
-      d = messageOption
+      d = {
+        content: messageOption
+      }
     } if (typeof messageOption === 'object') {
       if (messageOption.attachments !== undefined) {
         if (!Array.isArray(messageOption.attachments)) throw new Error('Fields called attachments have to be in Array!');
@@ -304,7 +314,7 @@ export class ChannelRest<TypeChannel> extends ChannelData {
         isJson: true,
         isRequiredAuth: true,
       }
-    })
+    });
   }
 
   permissionsSet() {

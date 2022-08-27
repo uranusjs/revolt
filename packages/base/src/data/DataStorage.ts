@@ -66,7 +66,7 @@ export interface DataStorageOptions {
 
 interface DataInfo<D> {
   id?: string;
-  data: D;
+  data: D | DataPackage<D>;
   ttl: 0;
   requireTTL: boolean;
 }
@@ -123,7 +123,7 @@ export class DataStorageBase<D> extends Array<Data<D>> {
     return data
   }
 
-  add<D>(data: DataInfo<D>) {
+  add(data: DataInfo<D>) {
     if (data !== undefined) {
       if (data.ttl !== undefined) {
         if (data.requireTTL !== undefined && data.requireTTL) {

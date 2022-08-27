@@ -1,9 +1,13 @@
-import { RestClient } from '@uranusjs/rest-revolt';
+import { NoRequired, Onboard, RestAction, RestClient, RoutePath } from '@uranusjs/rest-revolt';
 import { WebsocketClient } from '@uranusjs/ws-revolt';
 import { DataStorageBase } from './data/DataStorage';
 import type { MemberData } from './data/structures/MemberData';
 import type { ServerData } from './data/structures/ServerData';
-import type { Channel, DirectMessage, Group, SavedMessages, TextChannel, VoiceChannel } from './entity/Channel';
+import type {
+  Channel, DirectMessage, Group,
+  SavedMessages, TextChannel, VoiceChannel
+} from './entity/Channel';
+import { WebSocketManager } from './ws/WebSocketManager';
 
 
 export enum Logging {
@@ -43,13 +47,14 @@ export class RevoltClient {
   restClient: RestClient;
   token: string;
   cacheManager: Caches;
-
+  websocketManager: WebSocketManager;
 
   constructor(token: string, restClient: RestClient, websocketClient: WebsocketClient) {
     this.token = token;
     this.restClient = restClient;
     this.websocketClient = websocketClient;
     this.cacheManager = new Caches();
+    this.websocketManager = new WebSocketManager(this);
   }
 
   block() {

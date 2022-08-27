@@ -1,0 +1,25 @@
+export enum BucketLimiter {
+  USERS = 20,
+  BOTS = 10,
+  MESSAGING = 10,
+  CHANNELS = 15,
+  SERVERS = 5,
+  DEFAULT_AVATAR = 255,
+  SWAGGER = 100,
+  ANY = 20,
+  NONE = 0
+}
+
+
+export enum BucketType {
+  USERS = 'USERS',
+  BOTS = 'BOTS',
+  MESSAGING = 'MESSAGING',
+  CHANNELS = 'CHANNELS',
+  SERVERS = 'SERVERS',
+  DEFAULT_AVATAR = 'DEFAULT_AVATAR',
+  SWAGGER = 'SWAGGER',
+  ANY = 'ANY',
+  NONE = 'NONE'
+}
+
