@@ -5,6 +5,24 @@
   "typings": "./build/src/index.d.ts",
   "module": "module",
   "exports": "./build/src/index.js",
+  "scripts": {
+    "test:vitest": "vitest",
+    "test:jest": "jest"
+  },
   "license": "ISC",
-  "packageManager": "yarn@6.3.2"
+  "packageManager": "yarn@6.3.2",
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.35.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^28.1.8",
+    "@typescript-eslint/parser": "^5.35.1",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-import-resolver-typescript": "^3.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "jest": "^29.0.1",
+    "ts-jest": "^28.0.8",
+    "vitest": "^0.22.1"
+  }
 }

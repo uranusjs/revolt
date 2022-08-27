@@ -5,12 +5,12 @@ const ProjectWrapper = require('tsc-compile-projects')
 const Events = require('tsc-compile-projects/src/events').Event
 const devMode = true
 const projects = [
-  // {
-  //   'name': 'base',
-  //   'projectDir': './packages/base',
-  //   'watchMode': devMode,
-  //   'args': []
-  // },
+  {
+    'name': 'base',
+    'projectDir': './packages/base',
+    'watchMode': devMode,
+    'args': []
+  },
   {
     'name': 'models',
     'projectDir': './packages/models',

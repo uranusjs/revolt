@@ -24,6 +24,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-    # - run: npm ci
-    # - run: npm run test
-    # - run: npm test
+      - run: npm ci
+        # Vitest
+      - run: yarn workspaces run test:vitest
+        # Jest
+      - run: yarn workspaces run test:jest

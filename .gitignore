@@ -6,3 +6,4 @@ launch.json
 .idea/
 node_modules/
 .tsbuildinfo
+test/

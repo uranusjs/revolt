@@ -3,7 +3,6 @@ import { ChannelsRoute, DataEditChannel, MessageUnreactOptions, NoRequired, Rest
 import type { OptionsQueryMessages } from '@uranusjs/rest-revolt/build/src/query/channels/channelQuery';
 import { RestBase } from '../../restAction/RestBase';
 
-
 export interface DataMessageSend {
   nonce?: string;
   content?: string;
@@ -14,320 +13,411 @@ export interface DataMessageSend {
   interactions?: InteractionsStruct;
 }
 
-
 export class ChannelData {
-  id: string | null = null;
-  type: string | null = null;
-  name: string | null = null;
-  owner: string | null = null;
-  description: string | null = null;
-  icon: FileStruct | null = null;
-  nsfw: boolean | null = null;
-  active: boolean | null = null;
-  permissions: number | null = null;
-  defaultPermissions: number | null = null;
-  lastMessageId: string | null = null;
-  constructor(data?: PartialChannelStruct) {
-    if (data !== undefined) {
-      this.updateData(data);
-    }
-  }
+    private id: string | null = null;
+    private type: string | null = null;
+    private name: string | null = null;
+    private owner: string | null = null;
+    private description: string | null = null;
+    private icon: FileStruct | null = null;
+    private nsfw: boolean | null = null;
+    private active: boolean | null = null;
+    private permissions: number | null = null;
+    private defaultPermissions: number | null = null;
+    private lastMessageId: string | null = null;
 
-  updateData(data?: any | ChannelData) {
-    if (data?.id !== undefined) {
-      this.id = data.id;
-    } else if (data._id !== undefined) {
-      this.id = data._id;
+    get getId() {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return this.id!;
     }
-    if (data?.channel_type !== undefined) {
-      this.type = data.channel_type;
-    } else if (data?.type !== undefined) {
-      this.type = data.type;
+
+    get getChannelType() {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return this.type!;
     }
-    if (data?.name !== undefined) {
-      this.name = data.name;
+
+    get getName() {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return this.name!;
     }
-    if (data?.owner !== undefined) {
-      this.owner = data.owner
+
+    get getOwner() {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return this.owner!;
     }
-    if (data?.description !== undefined) {
-      this.description = data.description
+
+    get getDescription() {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return this.description!;
     }
-    if (data?.icon !== undefined) {
-      this.icon = data.icon
+
+    get getIcon() {
+         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return this.icon!;
     }
-    if (data?.nsfw !== undefined) {
-      this.nsfw = data.nsfw
+
+    get isNsfw() {
+         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return this.nsfw!;
     }
-    if (data?.active !== undefined) {
-      this.active = data.active
+
+    get getActive() {
+         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return this.active!;
     }
-    if (data?.permissions !== undefined) {
-      this.permissions = data.permissions
+
+    constructor(data?: PartialChannelStruct) {
+        if (data !== undefined) {
+            this.updateData(data);
+        }
     }
-    if (data?.default_permissions !== undefined) {
-      this.defaultPermissions = data.default_permissions
+
+    updateData(data?: any | ChannelData) {
+        if (data?.id !== undefined) {
+            this.id = data.id;
+        } else if (data._id !== undefined) {
+            this.id = data._id;
+        }
+        if (data?.channel_type !== undefined) {
+            this.type = data.channel_type;
+        } else if (data?.type !== undefined) {
+            this.type = data.type;
+        }
+        if (data?.name !== undefined) {
+            this.name = data.name;
+        }
+        if (data?.owner !== undefined) {
+            this.owner = data.owner;
+        }
+        if (data?.description !== undefined) {
+            this.description = data.description;
+        }
+        if (data?.icon !== undefined) {
+            this.icon = data.icon;
+        }
+        if (data?.nsfw !== undefined) {
+            this.nsfw = data.nsfw;
+        }
+        if (data?.active !== undefined) {
+            this.active = data.active;
+        }
+        if (data?.permissions !== undefined) {
+            this.permissions = data.permissions;
+        }
+        if (data?.default_permissions !== undefined) {
+            this.defaultPermissions = data.default_permissions;
+        }
+        if (data?.last_message_id !== undefined) {
+            this.lastMessageId = data.last_message_id;
+        }
+        return this;
     }
-    if (data?.last_message_id !== undefined) {
-      this.lastMessageId = data.last_message_id
-    }
-    return this
-  }
 }
 
 export class ChannelRest<TypeChannel> extends ChannelData {
-  private channelData: ChannelData;
-  private restBase: RestBase;
-  constructor(restClient: RestClient, channelData: ChannelData) {
-    super()
-    this.restBase = new RestBase(restClient);
-    this.channelData = channelData;
-  }
-
-  modifyName(name: string) {
-    if (typeof name !== 'string') throw new Error('Invalid text input!');
-    if (name.length < 1) {
-      throw new Error('You need to enter at least one word to change the channel name.');
-    } if (name.length >= 32) {
-      throw new Error('The maximum length the channel allows is 32 characters.');
+    private channelData: ChannelData;
+    private restBase: RestBase;
+    constructor(restClient: RestClient, channelData: ChannelData) {
+        super();
+        this.restBase = new RestBase(restClient);
+        this.channelData = channelData;
     }
 
-    return this.restBase.executeAction<RoutePath.CHANNELS, DataEditChannel, TypeChannel>({
-      route: ChannelsRoute.CHANNEL_EDIT(this.channelData.id!!),
-      requestOptions: {
-        body: {
-          name: name
-        },
-        isJson: true,
-        isRequiredAuth: true,
-      }
-    })
-  }
-
-
-  modifyDescription(description: string) {
-    if (typeof description !== 'string') throw new Error('Invalid text input!');
-    if (description.length < -1) {
-      throw new Error('You need to enter at least one word to change the channel description.');
-    } if (description.length >= 1024) {
-      throw new Error('The maximum length the channel allows is 32 characters.');
-    }
-
-    return this.restBase.executeAction<RoutePath.CHANNELS, DataEditChannel, TypeChannel>({
-      route: ChannelsRoute.CHANNEL_EDIT(this.channelData.id!!),
-      requestOptions: {
-        body: {
-          description: description
-        },
-        isJson: true,
-        isRequiredAuth: true,
-      }
-    })
-  }
-
-
-  setIcon(icon: string) {
-    if (typeof icon !== 'string') throw new Error('Invalid text input!');
-    if (icon.length < 1) {
-      throw new Error('You need to enter at least one word to change the channel icon.');
-    } if (icon.length >= 128) {
-      throw new Error('The maximum length the channel allows is 32 characters.');
-    }
-
-    return this.restBase.executeAction<RoutePath.CHANNELS, DataEditChannel, TypeChannel>({
-      route: ChannelsRoute.CHANNEL_EDIT(this.channelData.id!!),
-      requestOptions: {
-        body: {
-          icon: icon
-        },
-        isJson: true,
-        isRequiredAuth: true,
-      }
-    })
-  }
-
-  deleteChannel() {
-    return this.restBase.executeAction<RoutePath.CHANNELS, null, TypeChannel>({
-      route: ChannelsRoute.CHANNEL_DELETE(this.channelData.id!!),
-      requestOptions: {
-        body: undefined,
-        isJson: true,
-        isRequiredAuth: true,
-      }
-    })
-  }
-
-
-  fetchChannel() {
-    return this.restBase.executeAction<RoutePath.CHANNELS, DataEditChannel, TypeChannel>({
-      route: ChannelsRoute.CHANNEL_FETCH(this.channelData.id!!),
-      requestOptions: {
-        body: undefined,
-        isJson: true,
-        isRequiredAuth: true,
-      }
-    })
-  }
-
-
-  setNsfw(nsfw: boolean) {
-    if (typeof nsfw !== 'boolean') throw new Error('Invalid input!');
-
-    return this.restBase.executeAction<RoutePath.CHANNELS, DataEditChannel, TypeChannel>({
-      route: ChannelsRoute.CHANNEL_EDIT(this.channelData.id!!),
-      requestOptions: {
-        body: {
-          nsfw: nsfw
-        },
-        isJson: true,
-        isRequiredAuth: true,
-      }
-    })
-  }
-
-  sendMessage(messageOption: string | DataMessageSend) {
-    let d;
-    if (typeof messageOption == 'string') {
-      d = {
-        content: messageOption
-      }
-    } if (typeof messageOption === 'object') {
-      if (messageOption.attachments !== undefined) {
-        if (!Array.isArray(messageOption.attachments)) throw new Error('Fields called attachments have to be in Array!');
-      }
-      if (messageOption.replies !== undefined) {
-        if (!Array.isArray(messageOption.replies)) throw new Error('Fields called replies have to be in Array!');
-      }
-      if (messageOption.embeds !== undefined) {
-        if (!Array.isArray(messageOption.embeds)) throw new Error('Fields called embeds have to be in Array!');
-      }
-      if (messageOption.interactions !== undefined) {
-        if (messageOption.interactions.reactions !== undefined) {
-          if (!Array.isArray(messageOption.interactions.reactions)) throw new Error('messageOption.interactions.reactions is Array!');
+    modifyName(name: string) {
+        if (typeof name !== 'string') {
+            throw new Error('Invalid text input!');
         }
-        if (messageOption.interactions.restrict_reactions !== undefined) {
-          if (typeof messageOption.interactions.restrict_reactions != 'boolean') throw new Error('messageOption.interactions.restrict_reactions is boolean!');
+        if (name.length < 1) {
+            throw new Error('You need to enter at least one word to change the channel name.');
         }
-      }
-      if (messageOption.masquerade?.avatar !== undefined) {
-        if (typeof messageOption.masquerade?.avatar !== 'string') throw new Error('messageOption.masquerade?.avatar is String!');
-      }
-      if (messageOption.nonce !== undefined) {
-        if (typeof messageOption.nonce !== 'string') throw new Error('messageOption.masquerade?.avatar is String!');
-      }
-      d = messageOption;
+
+        if (name.length >= 32) {
+            throw new Error('The maximum length the channel allows is 32 characters.');
+        }
+
+        return this.restBase.executeAction<RoutePath.CHANNELS, DataEditChannel, TypeChannel>({
+            'route': ChannelsRoute.CHANNEL_EDIT(this.channelData.getId),
+            'requestOptions': {
+                'body': {
+                    name,
+                },
+                'isJson': true,
+                'isRequiredAuth': true,
+            },
+        });
     }
 
-    return this.restBase.executeAction<RoutePath.CHANNELS, any, TypeChannel>({
-      route: ChannelsRoute.MESSAGE_SEND(this.channelData.id!!),
-      requestOptions: {
-        body: d,
-        isJson: true,
-        isRequiredAuth: true,
-      }
-    })
-  }
-
-  messageDelete(id: string) {
-    return this.restBase.executeAction<RoutePath.CHANNELS, NoRequired, TypeChannel>({
-      route: ChannelsRoute.MESSAGE_DELETE(this.channelData.id!!, id),
-      requestOptions: {
-        body: undefined,
-        isJson: true,
-        isRequiredAuth: true,
-      }
-    })
-  }
-
-  messageQuery(id: string, options: OptionsQueryMessages) {
-    if (typeof id !== 'string') throw new Error('ID is string!');
-    if (options !== undefined) {
-      if (typeof options !== 'object') throw new Error('options is Object.');
-      if (options.after !== undefined) {
-        if (typeof options.after !== 'string') throw new Error('options.after is String!');
-      }
-      if (options.before !== undefined) {
-        if (typeof options.before !== 'string') throw new Error('options.before is String!');
-      }
-      if (options.includeUsers !== undefined) {
-        if (typeof options.includeUsers !== 'boolean') throw new Error('options.after is Boolean!');
-      }
-      if (options.limit !== undefined) {
-        if (typeof options.limit !== 'number') throw new Error('options.after is Number!');
-      }
-      if (options.nearby !== undefined) {
-        if (typeof options.nearby !== 'number') throw new Error('options.nearby is String!');
-      }
-      if (options.sort !== undefined) {
-        if (typeof options.sort !== 'number') throw new Error('options.nearby is Number/Enum!');
-      }
-    } else {
-      throw new Error('.messageQuery(id: string, options: OptionsQueryMessages): options is required');
-    }
-    return this.restBase.executeAction<RoutePath.CHANNELS, NoRequired, TypeChannel>({
-      route: ChannelsRoute.MESSAGE_QUERY(this.channelData.id!!, id, options),
-      requestOptions: {
-        body: undefined,
-        isJson: true,
-        isRequiredAuth: true,
-      }
-    })
-  }
-  
-
-  messageReact(id: string, emoji: string) {
-    if (typeof id !== 'string') throw new Error('ID is string!');
-    if (typeof emoji !== 'string') throw new Error('emoji is string!');
-    return this.restBase.executeAction<RoutePath.CHANNELS, NoRequired, TypeChannel>({
-      route: ChannelsRoute.MESSAGE_REACT(this.channelData.id!!, id, emoji),
-      requestOptions: {
-        body: undefined,
-        isJson: true,
-        isRequiredAuth: true,
-      }
-    })
-  }
-
-  messageUnreact(id: string, options: MessageUnreactOptions) {
-    if (typeof id !== 'string') throw new Error('ID is string!');
-    if (options !== undefined) {
-      if (typeof options !== 'object') throw new Error('options is Object!');
-      if (options.emoji !== undefined) {
-        if (typeof options.emoji !== 'string') throw new Error('options.emoji is String!');
-      }
-      if (options.extendOptions !== undefined) {
-        if (options.extendOptions.user_id !== undefined) {
-          if (typeof options.extendOptions.user_id !== 'string') throw new Error('options.extendOptions.user_id is String!');
+    modifyDescription(description: string) {
+        if (typeof description !== 'string') {
+            throw new Error('Invalid text input!');
         }
-        if (options.extendOptions.remove_all !== undefined) {
-          if (typeof options.extendOptions.user_id !== 'boolean') throw new Error('options.extendOptions.remove_all is String!');
+        if (description.length < -1) {
+            throw new Error('You need to enter at least one word to change the channel description.');
         }
-      }
-    } else {
-      throw new Error('Options is required');
-      
-    }
-    return this.restBase.executeAction<RoutePath.CHANNELS, NoRequired, TypeChannel>({
-      route: ChannelsRoute.MESSAGE_UNREACT(this.channelData.id!!, id, options),
-      requestOptions: {
-        body: undefined,
-        isJson: true,
-        isRequiredAuth: true,
-      }
-    });
-  }
 
-  permissionsSet() {
+        if (description.length >= 1024) {
+            throw new Error('The maximum length the channel allows is 32 characters.');
+        }
+
+        return this.restBase.executeAction<RoutePath.CHANNELS, DataEditChannel, TypeChannel>({
+            'route': ChannelsRoute.CHANNEL_EDIT(this.channelData.getId),
+            'requestOptions': {
+                'body': {
+                    description,
+                },
+                'isJson': true,
+                'isRequiredAuth': true,
+            },
+        });
+    }
+
+    setIcon(icon: string) {
+        if (typeof icon !== 'string') {
+            throw new Error('Invalid text input!');
+        }
+        if (icon.length < 1) {
+            throw new Error('You need to enter at least one word to change the channel icon.');
+        }
+
+        if (icon.length >= 128) {
+            throw new Error('The maximum length the channel allows is 32 characters.');
+        }
+
+        return this.restBase.executeAction<RoutePath.CHANNELS, DataEditChannel, TypeChannel>({
+            'route': ChannelsRoute.CHANNEL_EDIT(this.channelData.getId),
+            'requestOptions': {
+                'body': {
+                    icon,
+                },
+                'isJson': true,
+                'isRequiredAuth': true,
+            },
+        });
+    }
+
+    deleteChannel() {
+        return this.restBase.executeAction<RoutePath.CHANNELS, null, TypeChannel>({
+            'route': ChannelsRoute.CHANNEL_DELETE(this.channelData.getId),
+            'requestOptions': {
+                'body': undefined,
+                'isJson': true,
+                'isRequiredAuth': true,
+            },
+        });
+    }
+
+    fetchChannel() {
+        return this.restBase.executeAction<RoutePath.CHANNELS, DataEditChannel, TypeChannel>({
+            'route': ChannelsRoute.CHANNEL_FETCH(this.channelData.getId),
+            'requestOptions': {
+                'body': undefined,
+                'isJson': true,
+                'isRequiredAuth': true,
+            },
+        });
+    }
+
+    setNsfw(nsfw: boolean) {
+        if (typeof nsfw !== 'boolean') {
+            throw new Error('Invalid input!');
+        }
+
+        return this.restBase.executeAction<RoutePath.CHANNELS, DataEditChannel, TypeChannel>({
+            'route': ChannelsRoute.CHANNEL_EDIT(this.channelData.getId),
+            'requestOptions': {
+                'body': {
+                    nsfw,
+                },
+                'isJson': true,
+                'isRequiredAuth': true,
+            },
+        });
+    }
+
+    sendMessage(messageOption: string | DataMessageSend) {
+        let d;
+
+        if (typeof messageOption === 'string') {
+            d = {
+                'content': messageOption,
+            };
+        }
+
+        if (typeof messageOption === 'object') {
+            if (messageOption.attachments !== undefined) {
+                if (!Array.isArray(messageOption.attachments)) {
+                    throw new Error('Fields called attachments have to be in Array!');
+                }
+            }
+            if (messageOption.replies !== undefined) {
+                if (!Array.isArray(messageOption.replies)) {
+                    throw new Error('Fields called replies have to be in Array!');
+                }
+            }
+            if (messageOption.embeds !== undefined) {
+                if (!Array.isArray(messageOption.embeds)) {
+                    throw new Error('Fields called embeds have to be in Array!');
+                }
+            }
+            if (messageOption.interactions !== undefined) {
+                if (messageOption.interactions.reactions !== undefined) {
+                    if (!Array.isArray(messageOption.interactions.reactions)) {
+                        throw new Error('messageOption.interactions.reactions is Array!');
+                    }
+                }
+                if (messageOption.interactions.restrict_reactions !== undefined) {
+                    if (typeof messageOption.interactions.restrict_reactions !== 'boolean') {
+                        throw new Error('messageOption.interactions.restrict_reactions is boolean!');
+                    }
+                }
+            }
+            if (messageOption.masquerade?.avatar !== undefined) {
+                if (typeof messageOption.masquerade?.avatar !== 'string') {
+                    throw new Error('messageOption.masquerade?.avatar is String!');
+                }
+            }
+            if (messageOption.nonce !== undefined) {
+                if (typeof messageOption.nonce !== 'string') {
+                    throw new Error('messageOption.masquerade?.avatar is String!');
+                }
+            }
+            d = messageOption;
+        }
+
+        return this.restBase.executeAction<RoutePath.CHANNELS, any, TypeChannel>({
+            'route': ChannelsRoute.MESSAGE_SEND(this.channelData.getId),
+            'requestOptions': {
+                'body': d,
+                'isJson': true,
+                'isRequiredAuth': true,
+            },
+        });
+    }
+
+    messageDelete(id: string) {
+        return this.restBase.executeAction<RoutePath.CHANNELS, NoRequired, TypeChannel>({
+            'route': ChannelsRoute.MESSAGE_DELETE(this.channelData.getId, id),
+            'requestOptions': {
+                'body': undefined,
+                'isJson': true,
+                'isRequiredAuth': true,
+            },
+        });
+    }
+
+    messageQuery(id: string, options: OptionsQueryMessages) {
+        if (typeof id !== 'string') {
+            throw new Error('ID is string!');
+        }
+        if (options !== undefined) {
+            if (typeof options !== 'object') {
+                throw new Error('options is Object.');
+            }
+            if (options.after !== undefined) {
+                if (typeof options.after !== 'string') {
+                    throw new Error('options.after is String!');
+                }
+            }
+            if (options.before !== undefined) {
+                if (typeof options.before !== 'string') {
+                    throw new Error('options.before is String!');
+                }
+            }
+            if (options.includeUsers !== undefined) {
+                if (typeof options.includeUsers !== 'boolean') {
+                    throw new Error('options.after is Boolean!');
+                }
+            }
+            if (options.limit !== undefined) {
+                if (typeof options.limit !== 'number') {
+                    throw new Error('options.after is Number!');
+                }
+            }
+            if (options.nearby !== undefined) {
+                if (typeof options.nearby !== 'number') {
+                    throw new Error('options.nearby is String!');
+                }
+            }
+            if (options.sort !== undefined) {
+                if (typeof options.sort !== 'number') {
+                    throw new Error('options.nearby is Number/Enum!');
+                }
+            }
+        } else {
+            throw new Error('.messageQuery(id: string, options: OptionsQueryMessages): options is required');
+        }
+
+        return this.restBase.executeAction<RoutePath.CHANNELS, NoRequired, TypeChannel>({
+            'route': ChannelsRoute.MESSAGE_QUERY(this.channelData.getId, id, options),
+            'requestOptions': {
+                'body': undefined,
+                'isJson': true,
+                'isRequiredAuth': true,
+            },
+        });
+    }
+
+    messageReact(id: string, emoji: string) {
+        if (typeof id !== 'string') {
+            throw new Error('ID is string!');
+        }
+        if (typeof emoji !== 'string') {
+            throw new Error('emoji is string!');
+        }
+        return this.restBase.executeAction<RoutePath.CHANNELS, NoRequired, TypeChannel>({
+            'route': ChannelsRoute.MESSAGE_REACT(this.channelData.getId, id, emoji),
+            'requestOptions': {
+                'body': undefined,
+                'isJson': true,
+                'isRequiredAuth': true,
+            },
+        });
+    }
+
+    messageUnreact(id: string, options: MessageUnreactOptions) {
+        if (typeof id !== 'string') {
+            throw new Error('ID is string!');
+        }
+        if (options !== undefined) {
+            if (typeof options !== 'object') {
+                throw new Error('options is Object!');
+            }
+            if (options.emoji !== undefined) {
+                if (typeof options.emoji !== 'string') {
+                    throw new Error('options.emoji is String!');
+                }
+            }
+            if (options.extendOptions !== undefined) {
+                if (options.extendOptions.user_id !== undefined) {
+                    if (typeof options.extendOptions.user_id !== 'string') {
+                        throw new Error('options.extendOptions.user_id is String!');
+                    }
+                }
+                if (options.extendOptions.remove_all !== undefined) {
+                    if (typeof options.extendOptions.user_id !== 'boolean') {
+                        throw new Error('options.extendOptions.remove_all is String!');
+                    }
+                }
+            }
+        } else {
+            throw new Error('Options is required');
+        }
+        return this.restBase.executeAction<RoutePath.CHANNELS, NoRequired, TypeChannel>({
+            'route': ChannelsRoute.MESSAGE_UNREACT(this.channelData.getId, id, options),
+            'requestOptions': {
+                'body': undefined,
+                'isJson': true,
+                'isRequiredAuth': true,
+            },
+        });
+    }
+
+    permissionsSet() {
+      // TODO: Permissions Manager soon!
+    }
+
+    permissionsSetDefault() {
     // TODO: Permissions Manager soon!
-  }
-
-  permissionsSetDefault() {
-    // TODO: Permissions Manager soon!
-  }
-
-
+    }
 }
-
-
-
 
