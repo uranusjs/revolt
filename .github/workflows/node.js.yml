@@ -24,6 +24,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+      # Run info workspaces
+      - run: yarn workpaces info
+      # Install dependencies
       - run: yarn install
       - run: npm ci
         # Vitest
