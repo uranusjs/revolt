@@ -28,7 +28,6 @@ jobs:
       - run: yarn workspaces info
       # Install dependencies
       - run: yarn install
-      - run: npm ci
         # Vitest
       - run: yarn workspaces run test:vitest
         # Jest
