@@ -23,7 +23,12 @@
   },
   "homepage": "https://github.com/uranusjs/revolt#readme",
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "packages/base",
+    "packages/models",
+    "packages/rest",
+    "packages/utils",
+    "packages/websocket"
   ],
   "devDependencies": {
     "@babel/preset-typescript": "^7.18.6",
