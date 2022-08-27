@@ -34,6 +34,8 @@ export interface BucketRoute {
 }
 
 export interface NoRequired { }
+
+// @ts-ignore
 export class Route<Body, Route> {
   method: MethodRequest;
   path: string;
