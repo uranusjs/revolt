@@ -4,8 +4,8 @@
  */
 
 export default {
-    preset: 'ts-jest',
-    testEnvironment: 'node',
+    "preset": 'ts-jest',
+    "testEnvironment": 'node',
   // All imported modules in your tests should be mocked automatically
   // automock: false,
 
@@ -16,7 +16,7 @@ export default {
   // cacheDirectory: "C:\\Users\\ivyde\\AppData\\Local\\Temp\\jest",
 
   // Automatically clear mock calls, instances, contexts and results before every test
-    clearMocks: true,
+    "clearMocks": true,
 
   // Indicates whether the coverage information should be collected while executing the test
   // collectCoverage: false,
@@ -146,13 +146,13 @@ export default {
   // testLocationInResults: false,
 
   // The glob patterns Jest uses to detect test files
-    testMatch: [
+    "testMatch": [
         '**/__tests__/**/*.[jt]s?(x)',
         '**/src/**/*.[jt]s?(x)',
     ],
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
-    testPathIgnorePatterns: [
+    "testPathIgnorePatterns": [
         '\\\\node_modules\\\\',
         '\\\\build\\\\',
     ],
