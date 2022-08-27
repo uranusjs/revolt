@@ -3,6 +3,9 @@ import { EventEmitter } from 'node:events';
 import { Bucket } from './ratelimiter/builder';
 import { MethodRequest, Route } from './Route';
 
+/**
+ * This interface will inform you to establish the relief on the route and identify if it is full
+ */
 export interface RestActionRelieve {
   route: Route<any, any>;
   requestOptions: RequestOptions;
@@ -14,6 +17,10 @@ export interface RestActionI<R, T> {
   requestOptions: RequestOptions;
 }
 
+
+/**
+ * Manage request actions to receive the response from the Revolt API.
+ */
 export class RestAction<Body, R, Metadata> extends EventEmitter {
   timeoutRequest?: number;
   private metadata?: Metadata;
@@ -318,6 +325,10 @@ export class HeadersDetails {
   }
 
 }
+
+/**
+ * Requests first go through the bucket manager to avoid unnecessary request explosion
+ */
 export class BucketManager extends EventEmitter {
   sessionToken!: string;
   buckets: Map<string, Bucket>

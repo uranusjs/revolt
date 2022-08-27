@@ -21,20 +21,30 @@ export enum MethodRequest {
   HEAD = 'HEAD',
 }
 
+/**
+ * Open more specifications about the route.
+ */
 export interface RouteSpecifications<T, R> {
   body?: T;
   route?: R;
   template?: string;
 }
+
 export interface BodyRouteRequired<_> { }
 
+
+/**
+ * Add bucket type that this route needs
+ */
 export interface BucketRoute {
   limit: number;
   typeBucket: BucketType;
 }
 
 export interface NoRequired { }
-
+/**
+ * To add an identification to the routes to improve the bucket system
+ */
 // @ts-ignore
 export class Route<Body, Route> {
   method: MethodRequest;
