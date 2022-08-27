@@ -1,21 +1,21 @@
 {
   "name": "@uranusjs/utils-revolt",
-  "main": "./build/src/index.js",
   "version": "1.0.0",
+  "main": "./build/src/index.js",
   "types": "./build/src/index.d.ts",
-  "typings": "./build/index.d.ts",
+  "typings": "./build/src/index.d.ts",
   "module": "module",
-  "scripts": {
-    "installPackage": "yarn install",
-    "test:vitest": "vitest",
-    "test:jest": "jest"
-  },
   "exports": {
     "node": "./build/src/index.js",
     "import": "./build/src/index.js",
     "default": "./build/src/index.js",
     "require": "./build/src/index.js",
-    "types": "./build/index.d.ts"
+    "types": "./build/src/index.d.ts"
+  },
+  "scripts": {
+    "installPackage": "yarn install",
+    "test:vitest": "vitest",
+    "test:jest": "jest"
   },
   "license": "ISC",
   "packageManager": "yarn@6.3.2",

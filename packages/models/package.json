@@ -1,10 +1,17 @@
 {
   "name": "@uranusjs/models-revolt",
-  "main": "./build/src/index.js",
   "version": "1.0.0",
+  "main": "./build/src/index.js",
+  "types": "./build/src/index.d.ts",
   "typings": "./build/src/index.d.ts",
   "module": "module",
-  "exports": "./build/src/index.js",
+  "exports": {
+    "node": "./build/src/index.js",
+    "import": "./build/src/index.js",
+    "default": "./build/src/index.js",
+    "require": "./build/src/index.js",
+    "types": "./build/src/index.d.ts"
+  },
   "scripts": {
     "installPackage": "yarn install",
     "test:vitest": "vitest",
