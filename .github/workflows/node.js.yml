@@ -24,6 +24,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+      # Clean cache
+      - run: yarn cache clean
       # Run info workspaces
       - run: yarn workspaces info
       # Install dependencies on Workspaces
