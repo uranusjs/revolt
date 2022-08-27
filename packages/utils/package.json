@@ -6,6 +6,7 @@
   "typings": "./build/index.d.ts",
   "module": "module",
   "scripts": {
+    "installPackage": "yarn install",
     "test:vitest": "vitest",
     "test:jest": "jest"
   },

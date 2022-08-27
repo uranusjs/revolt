@@ -13,6 +13,7 @@
     "types": "./build/src/index.d.ts"
   },
   "scripts": {
+    "installPackage": "yarn install",
     "test:vitest": "vitest",
     "test:jest": "jest"
   },

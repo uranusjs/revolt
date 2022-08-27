@@ -26,6 +26,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
       # Run info workspaces
       - run: yarn workspaces info
+      # Install dependencies on Workspaces
+      - run: yarn workspaces run installPackage
       # Install dependencies
       - run: yarn install
         # Vitest

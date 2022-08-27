@@ -6,6 +6,7 @@
   "module": "module",
   "exports": "./build/src/index.js",
   "scripts": {
+    "installPackage": "yarn install",
     "test:vitest": "vitest",
     "test:jest": "jest"
   },
