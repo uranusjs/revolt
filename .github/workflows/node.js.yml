@@ -10,9 +10,8 @@ on:
     branches: ["dev"]
 
 jobs:
-  build:
-    runs-on: [ubuntu-latest, macos-latest]
-
+  linux:
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [14.x, 16.x, 18.x]
@@ -20,7 +19,59 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js ${{ matrix.node-version }} [UBUNTU]
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      # Clean cache
+      - run: yarn cache clean
+      # Run info workspaces
+      - run: yarn workspaces info
+      # Install dependencies on Workspaces
+      - run: yarn workspaces run installPackage
+      # Install dependencies
+      - run: yarn install
+        # Vitest
+      - run: yarn workspaces run test:vitest
+        # Jest
+      - run: yarn workspaces run test:jest
+        
+  macos:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }} [UBUNTU]
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      # Clean cache
+      - run: yarn cache clean
+      # Run info workspaces
+      - run: yarn workspaces info
+      # Install dependencies on Workspaces
+      - run: yarn workspaces run installPackage
+      # Install dependencies
+      - run: yarn install
+        # Vitest
+      - run: yarn workspaces run test:vitest
+        # Jest
+      - run: yarn workspaces run test:jest
+
+  windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }} [UBUNTU]
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
