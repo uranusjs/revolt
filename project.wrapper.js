@@ -5,15 +5,6 @@ const Events = require('tsc-compile-projects/src/events').Event
 const devMode = false
 const projects = [
     {
-        'name': 'base',
-        'projectDir': './packages/base',
-        'watchMode': devMode,
-        'provider': 'yarn',
-        'installPackage': true,
-        'autoUpdatePackage': false,
-        'args': []
-    },
-    {
         'name': 'models',
         'projectDir': './packages/models',
         'watchMode': devMode,
@@ -41,6 +32,15 @@ const projects = [
         'name': 'websocket',
         'projectDir': './packages/websocket',
         'watchMode': devMode,
+        'installPackage': true,
+        'autoUpdatePackage': false,
+        'args': []
+    },
+    {
+        'name': 'base',
+        'projectDir': './packages/base',
+        'watchMode': devMode,
+        'provider': 'yarn',
         'installPackage': true,
         'autoUpdatePackage': false,
         'args': []
