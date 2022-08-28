@@ -1,13 +1,13 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "./src",
     /* Projects */
     "composite": true,
     "lib": [
       "ES2021",
       "ESNext",
-      "ES2022"
+      "ES2022",
     ],
     "module": "Node16",
     "target": "ESNext",

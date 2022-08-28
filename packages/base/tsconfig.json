@@ -2,16 +2,17 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "types": [
-      "vitest/globals"
+      "vitest/globals",
+      "vitest/importMeta"
     ],
-    "baseUrl": ".",
+    "baseUrl": "./src",
     /* Projects */
     "composite": true,
     "lib": [
       "ES2021",
       "ESNext",
       "ES2022"
-    ],
+    ],  
     "module": "Node16",
     "target": "ESNext",
     "moduleResolution": "Node",
